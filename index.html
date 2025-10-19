@@ -12,22 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
-    /* --- NEW KEYFRAMES FOR PARALLAX STARS --- */
-    @keyframes move-stars-slow {
-      from { background-position: 0 0; }
-      to   { background-position: 0 -10000px; }
-    }
-    @keyframes move-stars-medium {
-      from { background-position: 0 0; }
-      to   { background-position: 0 -10000px; }
-    }
-    @keyframes move-stars-fast {
-      from { background-position: 0 0; }
-      to   { background-position: 0 -10000px; }
-    }
-    
     /* --- CSS STYLES --- */
-
+    
     /* 1. Global Styles & Variables */
     :root {
         --bg-color: #0d0521;
@@ -53,54 +39,6 @@
         overflow-x: hidden;
         line-height: 1.7;
     }
-
-    /* --- NEW DYNAMIC STARFIELD BACKGROUND --- */
-    body::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        will-change: background-position; /* Optimization hint for the browser */
-        z-index: -1;
-        
-        /* Layer 1: Small, dense, slow stars (distant) */
-        background-image: 
-            radial-gradient(2px 2px at 20px 30px, #eee, transparent),
-            radial-gradient(1.5px 1.5px at 80px 90px, #fff, transparent),
-            radial-gradient(1px 1px at 150px 160px, #ddd, transparent),
-            radial-gradient(1px 1px at 210px 40px, #fff, transparent);
-        background-repeat: repeat;
-        background-size: 250px 250px;
-        animation: move-stars-slow 240s linear infinite;
-
-        /* Using multiple pseudo-elements for more layers would be ideal, 
-           but for simplicity, we combine them. A more advanced version might use JS.
-           For now, we'll create the illusion with a second, faster layer in an ::after pseudo-element. */
-    }
-
-    body::after {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        will-change: background-position; /* Optimization hint for the browser */
-        z-index: -1;
-
-        /* Layer 2: Bigger, sparse, faster stars (closer) */
-        background-image:
-            radial-gradient(2px 2px at 50px 160px, #ddd, transparent),
-            radial-gradient(2px 2px at 130px 80px, #fff, transparent),
-            radial-gradient(1px 1px at 290px 240px, #eee, transparent),
-            radial-gradient(3px 3px at 350px 350px, #fff, transparent);
-        background-repeat: repeat;
-        background-size: 400px 400px;
-        animation: move-stars-medium 120s linear infinite;
-    }
-
 
     .container {
         max-width: 1200px;
@@ -566,11 +504,25 @@
         .sticky-nav {
             padding: 8px 15px;
         }
-    }
+    } 
+  /* Disable old CSS pseudo-star layers (they were causing visual conflicts). */
+  body::before, body::after { display: none !important; }
+
+  /* Canvas covers full screen and stays behind content */
+  #starfield {
+    position: fixed;
+    inset: 0;          /* top:0; right:0; bottom:0; left:0; */
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(circle at 40% 35%, #0d0521 0%, #060014 70%);
+    /* subtle background gradient to keep page readable even if canvas is disabled */
+  }
 </style>
 </head>
 <body>
-
+    <canvas id="starfield" aria-hidden="true"></canvas>
     <!-- Header -->
     <header class="hero">
         <img src="https://astroji.thefuture.university/assets/assets/images/logo.f4052b287762d9b75dd6b6d53e471448.png" alt="Astroji Logo" class="hero-logo fade-in">
@@ -762,6 +714,380 @@
 
     <!-- Scroll to Top Button -->
     <button id="scroll-to-top-btn" title="Go to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('starfield');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d', { alpha: true });
+
+    const isMobile = window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
+    const DPR = Math.max(1, window.devicePixelRatio || 1);
+    let W = 0, H = 0, MIN_WH = 0;
+
+    // Tunable counts
+    const FAR_STARS_DESKTOP = 280;
+    const FAR_STARS_MOBILE = 90;
+    const NEAR_STARS_DESKTOP = 90;
+    const NEAR_STARS_MOBILE = 28;
+    const starCount = isMobile ? FAR_STARS_MOBILE : FAR_STARS_DESKTOP;
+    const nearCount = isMobile ? NEAR_STARS_MOBILE : NEAR_STARS_DESKTOP;
+
+    // Offscreen static canvas for distant stars
+    let offC = null, offCtx = null;
+
+    // Arrays
+    let farStars = [];
+    let nearStars = [];
+    let activeShooting = [];
+
+    // Frame control
+    const TARGET_FPS = isMobile ? 30 : 60;
+    const FRAME_DURATION = 1000 / TARGET_FPS;
+    let lastFrame = 0;
+
+    // ---------- Constellation data (normalized) ----------
+    // Each constellation: points = [{x,y,m}], coordinates normalized to a 0..1 box centered at (0.5,0.5).
+    // The ordering gives the connection order. Magnitude 'm' is visual weight (lower = brighter).
+    const CONSTELLATIONS = [
+        {
+        name: 'Orion',
+        // approximate, stylized points: (includes Betelgeuse, Rigel, Bellatrix, Saiph, Belt triple)
+        points: [
+            {x:0.48, y:0.15, m:0.6}, // Betelgeuse (upper-left)
+            {x:0.62, y:0.22, m:1.1}, // Bellatrix
+            {x:0.55, y:0.38, m:2.0}, // Alnitak (belt 1)
+            {x:0.50, y:0.45, m:1.9}, // Alnilam (belt 2)
+            {x:0.44, y:0.52, m:1.8}, // Mintaka (belt 3)
+            {x:0.34, y:0.68, m:0.7}, // Saiph (lower-left)
+            {x:0.68, y:0.78, m:0.6}, // Rigel (lower-right)
+        ],
+        center: {cx: 0.25, cy: 0.32}, // fraction across screen
+        scale: 0.75,
+        rotation: 0.06
+        },
+        {
+        name: 'UrsaMajor',
+        // Big Dipper simplified (7 points)
+        points: [
+            {x:0.10,y:0.25,m:1.1}, // Dubhe
+            {x:0.20,y:0.20,m:1.8},
+            {x:0.32,y:0.22,m:1.4},
+            {x:0.44,y:0.28,m:1.5},
+            {x:0.52,y:0.36,m:2.0},
+            {x:0.44,y:0.40,m:1.7},
+            {x:0.30,y:0.34,m:1.2}
+        ],
+        center: {cx: 0.70, cy: 0.18},
+        scale: 0.55,
+        rotation: -0.18
+        },
+        {
+        name: 'Cassiopeia',
+        // W shape
+        points: [
+            {x:0.18,y:0.12,m:1.4},
+            {x:0.28,y:0.22,m:2.0},
+            {x:0.38,y:0.14,m:1.8},
+            {x:0.48,y:0.24,m:2.3},
+            {x:0.58,y:0.12,m:1.9}
+        ],
+        center: {cx: 0.55, cy: 0.08},
+        scale: 0.32,
+        rotation: 0.05
+        },
+        {
+        name: 'Taurus',
+        points: [
+            {x:0.5,y:0.2,m:1.7},
+            {x:0.58,y:0.28,m:2.0},
+            {x:0.66,y:0.34,m:1.9},
+            {x:0.72,y:0.26,m:1.6}
+        ],
+        center: {cx:0.78, cy:0.45},
+        scale:0.45,
+        rotation:-0.08
+        },
+        {
+        name: 'Scorpius',
+        points: [
+            {x:0.12,y:0.18,m:1.2},
+            {x:0.18,y:0.28,m:1.8},
+            {x:0.24,y:0.36,m:2.3},
+            {x:0.30,y:0.46,m:1.6},
+            {x:0.38,y:0.54,m:1.9},
+            {x:0.46,y:0.62,m:1.3}
+        ],
+        center: {cx:0.15, cy:0.58},
+        scale:0.7,
+        rotation:0.12
+        }
+    ];
+    // ----------------------------------------------------
+
+    // Utilities
+    const rand = (a,b) => Math.random()*(b-a)+a;
+    const clamp = (v,min,max) => Math.max(min, Math.min(max, v));
+
+    function resize() {
+        W = Math.max(1, Math.floor(window.innerWidth));
+        H = Math.max(1, Math.floor(window.innerHeight));
+        MIN_WH = Math.min(W,H);
+        canvas.width = Math.floor(W * DPR);
+        canvas.height = Math.floor(H * DPR);
+        canvas.style.width = W + 'px';
+        canvas.style.height = H + 'px';
+        ctx.setTransform(DPR,0,0,DPR,0,0);
+
+        // Offscreen
+        offC = document.createElement('canvas');
+        offC.width = Math.floor(W * DPR);
+        offC.height = Math.floor(H * DPR);
+        offCtx = offC.getContext('2d');
+        offCtx.setTransform(DPR,0,0,DPR,0,0);
+
+        buildFarStars();
+        buildNearStars();
+    }
+
+    // Build static far stars + soft nebula background into offscreen
+    function buildFarStars() {
+        farStars = [];
+        offCtx.clearRect(0,0,W,H);
+
+        const count = starCount;
+        for (let i=0;i<count;i++){
+        const s = {
+            x: Math.random()*W,
+            y: Math.random()*H,
+            r: Math.random()*1.6 + 0.2,
+            opacity: rand(0.15, 0.9),
+            hueShift: rand(-25,25)
+        };
+        farStars.push(s);
+        drawSimpleStar(offCtx, s.x, s.y, s.r, s.opacity, s.hueShift);
+        }
+
+        // soft nebula sweeps (aesthetic)
+        const nebulas = Math.max(1, Math.round(W*H/700000));
+        for (let n=0;n<nebulas;n++){
+        const nx = rand(W*0.15, W*0.85);
+        const ny = rand(H*0.15, H*0.85);
+        const r = rand(MIN_WH*0.12, MIN_WH*0.3);
+        const g = offCtx.createRadialGradient(nx,ny,0,nx,ny,r);
+        g.addColorStop(0, `rgba(${Math.floor(rand(40,120))}, ${Math.floor(rand(60,160))}, ${Math.floor(rand(140,255))}, ${rand(0.02,0.07)})`);
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        offCtx.fillStyle = g;
+        offCtx.fillRect(nx-r, ny-r, r*2, r*2);
+        }
+    }
+
+    // Draw a regular star (used for offscreen)
+    function drawSimpleStar(c, x, y, r, opacity, hueShift=0){
+        c.beginPath();
+        c.globalAlpha = opacity;
+        const br = Math.floor(220 + hueShift/2);
+        const bg = Math.floor(230 + hueShift/2);
+        const bb = Math.floor(255 - Math.abs(hueShift)/2);
+        c.fillStyle = `rgb(${br},${bg},${bb})`;
+        c.arc(x,y,r,0,Math.PI*2);
+        c.fill();
+        c.globalAlpha = 1;
+    }
+
+    // Near stars for twinkle & motion
+    function buildNearStars(){
+        nearStars = [];
+        for (let i=0;i<nearCount;i++){
+        nearStars.push({
+            x: Math.random()*W,
+            y: Math.random()*H,
+            baseR: rand(0.7, 2.4),
+            r:0,
+            baseOp: rand(0.35,0.95),
+            op:0,
+            phase: rand(0,Math.PI*2),
+            speed: rand(0.001, 0.008),
+            dx: rand(-0.03,0.03),
+            dy: rand(0.01,0.25)
+        });
+        }
+    }
+
+    // Map normalized constellation points into screen coordinates
+    function mapConstellationToScreen(con) {
+        const pts = [];
+        const cx = con.center.cx * W;
+        const cy = con.center.cy * H;
+        const scale = con.scale * (MIN_WH) * 0.8; // scale relative to min dimension
+        const cosR = Math.cos(con.rotation || 0);
+        const sinR = Math.sin(con.rotation || 0);
+        for (let p of con.points){
+        // normalized p.x,p.y in [0..1], we center around 0.5
+        const nx = (p.x - 0.5) * scale;
+        const ny = (p.y - 0.5) * scale;
+        // rotate
+        const rx = nx * cosR - ny * sinR;
+        const ry = nx * sinR + ny * cosR;
+        pts.push({ x: cx + rx, y: cy + ry, m: p.m });
+        }
+        return pts;
+    }
+
+    // shooting star spawn
+    function spawnShooting() {
+        if (activeShooting.length > (isMobile ? 1 : 3)) return;
+        const sx = rand(-W*0.15, W*0.85);
+        const sy = rand(-H*0.15, H*0.4);
+        const angle = rand(0.25, 0.9);
+        const speed = rand(900, 1600) * (isMobile ? 0.6 : 1);
+        activeShooting.push({
+        x: sx,
+        y: sy,
+        vx: Math.cos(angle)*speed/1000,
+        vy: Math.sin(angle)*speed/1000,
+        life:0,
+        ttl: rand(600,1400),
+        trail: []
+        });
+    }
+
+    let lastShooting = 0;
+
+    // main render loop
+    function render(now) {
+        if (!lastFrame) lastFrame = now;
+        const dt = now - lastFrame;
+        if (dt < FRAME_DURATION) { requestAnimationFrame(render); return; }
+        lastFrame = now;
+
+        ctx.clearRect(0,0,W,H);
+
+        // draw offscreen background
+        if (offC) ctx.drawImage(offC, 0, 0, W, H);
+
+        // near stars (twinkle)
+        for (let s of nearStars){
+        s.phase += s.speed * dt;
+        s.op = s.baseOp * (0.55 + 0.45 * Math.sin(s.phase));
+        s.r = s.baseR * (0.85 + 0.35 * Math.sin(s.phase*0.9));
+        s.x += s.dx * (dt/16);
+        s.y += s.dy * (dt/16);
+        if (s.x < -6) s.x = W + 6;
+        if (s.x > W+6) s.x = -6;
+        if (s.y > H+6) s.y = -6;
+        ctx.globalAlpha = clamp(s.op, 0.06, 1);
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, Math.max(0.25, s.r), 0, Math.PI*2);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+
+        // draw constellations from data
+        ctx.lineWidth = isMobile ? 0.45 : 0.8;
+        ctx.strokeStyle = '#b7f6ff';
+        ctx.shadowColor = 'rgba(160,240,255,0.12)';
+        ctx.shadowBlur = isMobile ? 4 : 10;
+
+        for (let i=0;i<CONSTELLATIONS.length;i++){
+        const con = CONSTELLATIONS[i];
+        const pts = mapConstellationToScreen(con);
+
+        // faint pulsing alpha
+        const pulse = 0.35 + 0.5 * (0.5 + 0.5 * Math.sin((performance.now()/con.points.length/250) + i));
+        ctx.globalAlpha = clamp(0.06 + pulse*0.4, 0.08, 0.85);
+
+        // lines
+        ctx.beginPath();
+        for (let j=0;j<pts.length;j++){
+            const p = pts[j];
+            if (j===0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x,p.y);
+        }
+        // add small graceful curve at the end occasionally
+        ctx.stroke();
+
+        // draw major stars on top with glow
+        for (let p of pts){
+            const mag = clamp(3.6 - (p.m||2.0), 0.6, 3.6); // convert 'm' to visual size: smaller m -> brighter -> larger rad
+            const radius = mag * (isMobile ? 0.9 : 1.1);
+            // glow
+            const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius*6);
+            g.addColorStop(0, `rgba(210,240,255,${0.25})`);
+            g.addColorStop(0.4, `rgba(210,240,255,${0.09})`);
+            g.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = g;
+            ctx.globalAlpha = 1;
+            ctx.fillRect(p.x - radius*6, p.y - radius*6, radius*12, radius*12);
+
+            // core
+            ctx.beginPath();
+            ctx.globalAlpha = 0.95;
+            ctx.fillStyle = '#ffffff';
+            ctx.arc(p.x, p.y, Math.max(0.6, radius*0.8), 0, Math.PI*2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        }
+        }
+
+        ctx.shadowBlur = 0;
+
+        // shooting stars logic
+        const nowMs = performance.now();
+        if (nowMs - lastShooting > (isMobile ? 3000 : 1800)){
+        if (Math.random() < (isMobile ? 0.12 : 0.22)) {
+            spawnShooting();
+            lastShooting = nowMs;
+        }
+        }
+
+        // draw and update shooting stars
+        for (let k = activeShooting.length - 1; k >= 0; k--){
+        const s = activeShooting[k];
+        s.life += dt;
+        const progress = s.life / s.ttl;
+        s.trail.push({x: s.x, y: s.y});
+        if (s.trail.length > 18) s.trail.shift();
+
+        // trail drawing - older points dim
+        for (let t=0;t<s.trail.length;t++){
+            const p = s.trail[t];
+            const alpha = (t / s.trail.length) * 0.6 * (1-progress);
+            ctx.globalAlpha = alpha;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, Math.max(0.24, (1 - t / s.trail.length) * 2.6), 0, Math.PI*2);
+            ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+            ctx.fill();
+        }
+
+        ctx.globalAlpha = 0.95 * (1-progress);
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 1.6, 0, Math.PI*2);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+
+        s.x += s.vx * dt;
+        s.y += s.vy * dt;
+
+        if (s.life > s.ttl || s.x < -100 || s.x > W+100 || s.y > H+200) activeShooting.splice(k,1);
+        }
+        ctx.globalAlpha = 1;
+
+        requestAnimationFrame(render);
+    }
+
+    // init
+    resize();
+    window.addEventListener('resize', () => setTimeout(resize, 120));
+
+    // quick interaction: spawn shooting star on tap/click
+    canvas.addEventListener('pointerdown', () => {
+        spawnShooting();
+    });
+
+    requestAnimationFrame(render);
+    });
+    </script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
