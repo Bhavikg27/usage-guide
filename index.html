@@ -12,172 +12,457 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
-        /* --- CSS STYLES --- */
+    /* --- NEW KEYFRAMES FOR PARALLAX STARS --- */
+    @keyframes move-stars-slow {
+      from { background-position: 0 0; }
+      to   { background-position: 0 -10000px; }
+    }
+    @keyframes move-stars-medium {
+      from { background-position: 0 0; }
+      to   { background-position: 0 -10000px; }
+    }
+    @keyframes move-stars-fast {
+      from { background-position: 0 0; }
+      to   { background-position: 0 -10000px; }
+    }
+    
+    /* --- CSS STYLES --- */
 
-        /* 1. Global Styles & Variables */
-        :root {
-            --bg-color: #0d0521;
-            --primary-gradient: radial-gradient(circle at top, #2c1a5b, #0d0521);
-            --card-bg: rgba(255, 255, 255, 0.08);
-            --card-border: rgba(255, 255, 255, 0.2);
-            --text-color: #f0e8ff;
-            --heading-color: #ffffff;
-            --accent-color: #ffd700;
-            --font-body: 'Poppins', sans-serif;
-            --font-heading: 'Cinzel', serif;
-            --font-hindi: 'Tiro Devanagari Hindi', serif;
-        }
+    /* 1. Global Styles & Variables */
+    :root {
+        --bg-color: #0d0521;
+        --card-bg: rgba(255, 255, 255, 0.08);
+        --card-border: rgba(255, 255, 255, 0.2);
+        --text-color: #f0e8ff;
+        --heading-color: #ffffff;
+        --accent-color: #f2862c;
+        --font-body: 'Poppins', sans-serif;
+        --font-heading: 'Cinzel', serif;
+        --font-hindi: 'Tiro Devanagari Hindi', serif;
+        --dark-bg: #0c0a1a;
+    }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: var(--font-body);
-            background-color: var(--bg-color);
-            background-image: var(--primary-gradient);
-            background-attachment: fixed;
-            color: var(--text-color);
-            line-height: 1.7;
-            overflow-x: hidden;
-        }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+        font-family: var(--font-body);
+        color: var(--text-color);
+        background-color: var(--dark-bg);
+        min-height: 100vh;
+        overflow-x: hidden;
+        line-height: 1.7;
+    }
 
-        /* 2. Language Toggling Logic */
-        [lang="hi"] { display: none; }
-        body.lang-hi [lang="hi"] { display: inline; font-family: var(--font-hindi); }
-        body.lang-hi [lang="en"] { display: none; }
+    /* --- NEW DYNAMIC STARFIELD BACKGROUND --- */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
         
-        /* 3. Hero Header Section */
-        .hero {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            padding: 50px 20px 40px 20px;
-        }
-        .hero-logo { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--accent-color); margin-bottom: 20px; box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
-        .hero h1 { font-family: var(--font-heading); font-size: 2.5rem; color: var(--heading-color); letter-spacing: 3px; text-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
+        /* Layer 1: Small, dense, slow stars (distant) */
+        background-image: 
+            radial-gradient(1px 1px at 20px 30px, #eee, transparent),
+            radial-gradient(1px 1px at 80px 90px, #fff, transparent),
+            radial-gradient(1px 1px at 150px 160px, #ddd, transparent),
+            radial-gradient(1px 1px at 210px 40px, #fff, transparent);
+        background-repeat: repeat;
+        background-size: 250px 250px;
+        animation: move-stars-slow 180s linear infinite;
 
-        /* 4. NEW: Sticky Navigation Bar */
-        .sticky-nav {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            padding: 12px 40px;
-            background: rgba(13, 5, 33, 0.8); /* Slightly more opaque for readability */
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            border-bottom: 1px solid var(--card-border);
+        /* Using multiple pseudo-elements for more layers would be ideal, 
+           but for simplicity, we combine them. A more advanced version might use JS.
+           For now, we'll create the illusion with a second, faster layer in an ::after pseudo-element. */
+    }
+
+    body::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+
+        /* Layer 2: Bigger, sparse, faster stars (closer) */
+        background-image:
+            radial-gradient(2px 2px at 50px 160px, #ddd, transparent),
+            radial-gradient(2px 2px at 130px 80px, #fff, transparent),
+            radial-gradient(1px 1px at 290px 240px, #eee, transparent),
+            radial-gradient(3px 3px at 350px 350px, #fff, transparent);
+        background-repeat: repeat;
+        background-size: 400px 400px;
+        animation: move-stars-medium 90s linear infinite;
+    }
+
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* 2. Language Toggling Logic */
+    [lang="hi"] { display: none; }
+    body.lang-hi [lang="hi"] { display: inline; font-family: var(--font-hindi); }
+    body.lang-hi [lang="en"] { display: none; }
+    
+    /* 3. Hero Header Section */
+    .hero {
+        text-align: center;
+        padding: 40px 20px;
+    }
+    .hero-logo { 
+        width: 80px; 
+        height: 80px; 
+        border-radius: 50%; 
+        border: 2px solid var(--accent-color); 
+        margin-bottom: 15px; 
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); 
+    }
+    .hero h1 { 
+        font-family: var(--font-heading); 
+        font-size: 2rem; 
+        color: var(--heading-color); 
+        letter-spacing: 2px; 
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.3); 
+    }
+
+    /* --- 4. REVAMPED Floating Glass Navbar --- */
+    .sticky-nav-wrapper {
+        position: sticky;
+        top: 15px; /* Space from the top */
+        z-index: 1000;
+        padding: 0 15px;
+    }
+
+    .sticky-nav {
+        max-width: 1200px;
+        margin: 0 auto; /* Center the nav */
+        padding: 10px 20px;
+        background: rgba(19, 9, 41, 0.6); /* More transparent for better glass effect */
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        border-radius: 50px; /* Fully rounded ends */
+        border: 1px solid var(--card-border);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    }
+
+    .nav-logo-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+    }
+
+    .nav-logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid var(--accent-color);
+        flex-shrink: 0;
+    }
+    .nav-title {
+        font-family: var(--font-heading);
+        font-size: 1.2rem;
+        color: var(--heading-color);
+        font-weight: 700;
+        display: none; /* Hidden on small screens */
+    }
+
+    .search-box {
+        flex-grow: 1;
+        max-width: 500px;
+        margin: 0 15px;
+    }
+    #search-input {
+        width: 100%;
+        padding: 10px 20px;
+        font-size: 1rem;
+        color: var(--heading-color);
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 50px;
+        transition: box-shadow 0.3s, background 0.3s;
+    }
+    #search-input::placeholder { color: var(--text-color); opacity: 0.7; }
+    #search-input:focus { 
+        outline: none; 
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .lang-switcher {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 50px;
+        padding: 8px 15px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        flex-shrink: 0;
+        color: var(--text-color);
+    }
+    .lang-switcher:hover { background: rgba(255, 255, 255, 0.2); }
+
+    /* 5. Product Grid Layout */
+    .product-grid { 
+        display: grid; 
+        grid-template-columns: 1fr;
+        gap: 25px; 
+        padding: 30px 0; 
+    }
+    #no-results { 
+        display: none; 
+        grid-column: 1 / -1; 
+        text-align: center; 
+        padding: 40px; 
+        font-size: 1.2rem; 
+        color: var(--accent-color); 
+    }
+
+    /* 6. Glassmorphism Product Card */
+    .product-card { 
+        background: var(--card-bg); 
+        border: 1px solid var(--card-border); 
+        border-radius: 15px; 
+        padding: 20px; 
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); 
+        backdrop-filter: blur(12px); 
+        -webkit-backdrop-filter: blur(12px); 
+        display: flex; 
+        flex-direction: column; 
+        text-align: center; 
+        transition: transform 0.3s ease, box-shadow 0.3s ease; 
+    }
+    .product-card:hover { 
+        transform: translateY(-10px); 
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4); 
+    }
+    .product-image-container { 
+        width: 100%; 
+        aspect-ratio: 16 / 9; 
+        margin-bottom: 20px; 
+        border-radius: 10px; 
+        overflow: hidden; 
+        background-color: rgba(0,0,0,0.2); 
+    }
+    .product-card img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
+    }
+    .product-card h2 { 
+        font-family: var(--font-heading); 
+        font-size: 1.4rem; 
+        color: var(--heading-color); 
+        margin-bottom: 10px; 
+    }
+    .product-card p { 
+        font-size: 0.95rem; 
+        color: var(--text-color); 
+        flex-grow: 1; 
+        margin-bottom: 20px; 
+    }
+    .cta-button { 
+        display: inline-flex; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 10px; 
+        padding: 10px 20px; 
+        background-color: var(--accent-color); 
+        color: var(--bg-color); 
+        border-radius: 50px; 
+        text-decoration: none; 
+        font-weight: 600; 
+        transition: background-color 0.3s ease, transform 0.2s ease; 
+        align-self: center; 
+    }
+    .cta-button.pdf { background-color: #e74c3c; }
+    .cta-button:hover { 
+        background-color: #fff; 
+        transform: scale(1.05); 
+    }
+
+    /* 7. Footer Section */
+    .page-footer { 
+        padding: 40px 20px; 
+        margin-top: 40px; 
+        text-align: center; 
+        background: rgba(0,0,0,0.2); 
+        border-top: 1px solid var(--card-border); 
+    }
+    .footer-section { 
+        max-width: 800px; 
+        margin: 0 auto 40px auto; 
+    }
+    .footer-section h2 { 
+        font-family: var(--font-heading); 
+        font-size: 1.8rem; 
+        color: var(--heading-color); 
+        margin-bottom: 15px; 
+    }
+    .qr-container { 
+        display: flex; 
+        flex-direction: row;
+        justify-content: center;
+        align-items: center; 
+        gap: 30px; 
+        margin-top: 25px; 
+    }
+    .qr-code { 
+        width: 150px; 
+        height: 150px; 
+        padding: 10px; 
+        background: white; 
+        border-radius: 15px; 
+    }
+    .qr-text { 
+        font-size: 1rem; 
+        text-align: center; 
+    }
+    .qr-text a { 
+        color: var(--accent-color); 
+        font-weight: 600; 
+        text-decoration: none; 
+    }
+    .social-links { 
+        display: flex; 
+        justify-content: center; 
+        gap: 15px; 
+        margin-top: 25px; 
+    }
+    .social-links a { 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        gap: 8px; 
+        color: var(--text-color); 
+        text-decoration: none; 
+        font-size: 0.9rem; 
+        transition: color 0.3s, transform 0.3s; 
+    }
+    .social-links a:hover { 
+        color: var(--accent-color); 
+        transform: translateY(-5px); 
+    }
+    .social-links i { 
+        font-size: 2rem; 
+        width: 50px; 
+        height: 50px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        border-radius: 50%; 
+        background: var(--card-bg); 
+        border: 1px solid var(--card-border); 
+    }
+    .customer-support { 
+        margin-top: 30px; 
+        font-size: 0.9rem; 
+        opacity: 0.8; 
+    }
+    .customer-support a { color: var(--accent-color); }
+
+    /* 8. Scroll to Top Button */
+    #scroll-to-top-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+        background-color: var(--accent-color);
+        color: var(--bg-color);
+        border: none;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1001;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+        transform: translateY(20px);
+    }
+    #scroll-to-top-btn.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    #scroll-to-top-btn:hover { background-color: #fff; }
+
+    /* 9. Animations & Mobile Optimizations */
+    .fade-in { 
+        opacity: 0; 
+        transform: translateY(20px); 
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out; 
+    }
+    .fade-in.visible { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+    
+    /* --- Media Queries for Responsiveness --- */
+    
+    @media (min-width: 600px) {
+        .product-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+        .hero h1 {
+            font-size: 2.2rem;
+        }
+        .qr-container {
+            flex-direction: row;
+            gap: 30px;
+        }
+        .qr-text {
+            text-align: left;
+        }
+        .nav-title {
+            display: block; /* Show nav title on medium screens */
+        }
+    }
+
+    @media (min-width: 900px) {
+        .product-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .lang-switcher span { font-size: 0; } 
+        .lang-switcher::before {
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            content: '\f0ac'; /* Globe icon */
+            font-size: 1.1rem;
         }
         .search-box {
-            flex-grow: 1; /* Makes search box take available space */
-            position: relative;
+            margin: 0; /* Remove extra margin on mobile */
         }
-        #search-input {
-            width: 100%;
-            padding: 12px 20px;
-            font-size: 1rem;
-            color: var(--heading-color);
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 50px;
-            transition: box-shadow 0.3s;
+        .sticky-nav-wrapper {
+            top: 10px;
+            padding: 0 10px;
         }
-        #search-input::placeholder { color: var(--text-color); opacity: 0.7; }
-        #search-input:focus { outline: none; box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
-        
-        .lang-switcher {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 50px;
+        .sticky-nav {
             padding: 8px 15px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            flex-shrink: 0; /* Prevents button from shrinking */
-            color: var(--text-color);
         }
-        .lang-switcher:hover { background: rgba(255, 255, 255, 0.2); }
-
-        /* 5. Product Grid Layout */
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; padding: 40px; max-width: 1400px; margin: 0 auto; }
-        #no-results { display: none; grid-column: 1 / -1; text-align: center; padding: 50px; font-size: 1.5rem; color: var(--accent-color); }
-
-        /* 6. Glassmorphism Product Card */
-        .product-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 25px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; flex-direction: column; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .product-card:hover { transform: translateY(-12px); box-shadow: 0 16px 40px 0 rgba(0, 0, 0, 0.5); }
-        .product-image-container { width: 100%; aspect-ratio: 16 / 10; margin-bottom: 25px; border-radius: 12px; overflow: hidden; background-color: rgba(0,0,0,0.2); }
-        .product-card img { width: 100%; height: 100%; object-fit: cover; }
-        .product-card h2 { font-family: var(--font-heading); font-size: 1.6rem; color: var(--heading-color); margin-bottom: 10px; }
-        .product-card p { font-size: 1rem; color: var(--text-color); flex-grow: 1; margin-bottom: 25px; }
-        .cta-button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 25px; background-color: var(--accent-color); color: var(--bg-color); border-radius: 50px; text-decoration: none; font-weight: 600; transition: background-color 0.3s ease, transform 0.2s ease; align-self: center; }
-        .cta-button.pdf { background-color: #e74c3c; }
-        .cta-button:hover { background-color: #fff; transform: scale(1.05); }
-
-        /* 7. Footer Section */
-        .page-footer { padding: 60px 20px; margin-top: 60px; text-align: center; background: rgba(0,0,0,0.2); border-top: 1px solid var(--card-border); }
-        .footer-section { max-width: 800px; margin: 0 auto 50px auto; }
-        .footer-section h2 { font-family: var(--font-heading); font-size: 2.2rem; color: var(--heading-color); margin-bottom: 20px; }
-        .qr-container { display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap; margin-top: 30px; }
-        .qr-code { width: 180px; height: 180px; padding: 10px; background: white; border-radius: 15px; }
-        .qr-text { font-size: 1.2rem; text-align: left; }
-        .qr-text a { color: var(--accent-color); font-weight: 600; text-decoration: none; }
-        .social-links { display: flex; justify-content: center; gap: 20px; margin-top: 30px; }
-        .social-links a { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-color); text-decoration: none; font-size: 1rem; transition: color 0.3s, transform 0.3s; }
-        .social-links a:hover { color: var(--accent-color); transform: translateY(-5px); }
-        .social-links i { font-size: 2.5rem; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--card-border); }
-        .customer-support { margin-top: 40px; font-size: 0.9rem; opacity: 0.8; }
-        .customer-support a { color: var(--accent-color); }
-
-        /* 8. NEW: Scroll to Top Button */
-        #scroll-to-top-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            background-color: var(--accent-color);
-            color: var(--bg-color);
-            border: none;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1001;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
-            transform: translateY(20px);
-        }
-        #scroll-to-top-btn.visible {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        #scroll-to-top-btn:hover { background-color: #fff; }
-
-        /* 9. Animations & Mobile Optimizations */
-        .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
-        .fade-in.visible { opacity: 1; transform: translateY(0); }
-        
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2rem; }
-            .sticky-nav { padding: 12px 20px; }
-            .product-grid { padding: 20px; gap: 30px; }
-            .qr-container { flex-direction: column; }
-            .qr-text { text-align: center; }
-            .lang-switcher span { font-size: 0; } /* Hide text on small screens */
-            .lang-switcher::before {
-                font-family: 'Font Awesome 6 Free';
-                font-weight: 900;
-                content: '\f0ac'; /* Globe icon */
-                font-size: 1.1rem;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
 
@@ -190,147 +475,157 @@
         </h1>
     </header>
 
-    <!-- NEW Sticky Nav Bar -->
-    <nav class="sticky-nav">
-        <div class="search-box">
-            <input type="search" id="search-input" 
-                placeholder="Search products... (e.g., 'protection', 'शांति')">
-        </div>
-        <button class="lang-switcher" id="lang-toggle-btn" title="Change Language">
-            <span lang="en">हिन्दी</span>
-            <span lang="hi">English</span>
-        </button>
-    </nav>
-
-    <!-- Main Product Grid -->
-    <main class="product-grid" id="product-grid">
-        <!-- All your product <article> cards go here exactly as they were before -->
-        <!-- No Results Message -->
-        <div id="no-results">
-            <span lang="en">No products found matching your search.</span>
-            <span lang="hi">आपकी खोज से मेल खाने वाला कोई उत्पाद नहीं मिला।</span>
-        </div>
-
-        <!-- 12 Jyotirlinga Chowki Card -->
-        <article class="product-card fade-in" data-tags="shiva, mahadev, jyotirlinga, 12, blessings, divine, spiritual, devotion, puja, chowki, temple, peace, energy, शिव, महादेव, ज्योतिर्लिंग, १२, आशीर्वाद, दिव्य, आध्यात्मिक, भक्ति, पूजा, चौकी, मंदिर, शांति, ऊर्जा">
-            <div class="product-image-container">
-                <img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760023060107%2F12-jyotirlinga-chowki-d98c6c-ChatGPT%2520Image%2520Oct%25209%252C%25202025%252C%252006_37_02%2520PM.webp&w=1920&q=75" alt="12 Jyotirlinga Chowki">
+    <!-- REVAMPED Sticky Nav Bar Wrapper -->
+    <div class="sticky-nav-wrapper">
+        <nav class="sticky-nav">
+            <a href="#" class="nav-logo-container">
+                <img src="https://astroji.thefuture.university/assets/assets/images/logo.f4052b287762d9b75dd6b6d53e471448.png" alt="Astroji Logo" class="nav-logo">
+                <span class="nav-title">Astroji</span>
+            </a>
+            <div class="search-box">
+                <input type="search" id="search-input" 
+                    placeholder="Search products... (e.g., 'protection', 'शांति')">
             </div>
-            <h2><span lang="en">12 Jyotirlinga Chowki</span><span lang="hi">१२ ज्योतिर्लिंग चौकी</span></h2>
-            <p><span lang="en">Brings the divine presence and blessings of all 12 sacred Jyotirlingas into your home. A powerful medium for devotion and spiritual peace.</span><span lang="hi">आपके घर में सभी 12 पवित्र ज्योतिर्लिंगों की दिव्य उपस्थिति और आशीर्वाद लाता है। भक्ति और आध्यात्मिक शांति के लिए एक शक्तिशाली माध्यम।</span></p>
-            <a href="https://www.canva.com/design/DAGzmCasR30/SoQqfsQa0L8-Brcud7lyVg/view?utm_content=DAGzmCasR30&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hcae1e9e607" target="_blank" class="cta-button pdf"><i class="fa-solid fa-file-pdf"></i> <span lang="en">Open Here</span><span lang="hi">यहाँ खोलें</span></a>
-        </article>
+            <button class="lang-switcher" id="lang-toggle-btn" title="Change Language">
+                <span lang="en">हिन्दी</span>
+                <span lang="hi">English</span>
+            </button>
+        </nav>
+    </div>
 
-        <!-- Bagla Mukhi Card -->
-        <article class="product-card fade-in" data-tags="victory, protection, strength, obstacles, बगलामुखी, विजय, सुरक्षा, शक्ति, बाधाओं">
-            <div class="product-image-container"><img src="https://tfu-media.s3.ap-south-1.amazonaws.com/products/1759930148093/bagla-mukhi-kavach-73c597-Gemini_Generated_Image_stx2hnstx2hnstx2.webp" alt="Bagla Mukhi Kit"></div>
-            <h2><span lang="en">Bagla Mukhi</span><span lang="hi">बगलामुखी</span></h2>
-            <p><span lang="en">Brings victory, protection, and strength against obstacles.</span><span lang="hi">बाधाओं के खिलाफ विजय, सुरक्षा और शक्ति लाता है।</span></p>
-            <a href="https://youtu.be/tdAj4u2lKcE" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
-        </article>
-
-        <!-- Vastu Kit Card -->
-        <article class="product-card fade-in" data-tags="vastu, harmony, prosperity, home, energies, वास्तु, सद्भाव, समृद्धि, घर, ऊर्जा">
-            <div class="product-image-container"><img src="https://tfu-media.s3.ap-south-1.amazonaws.com/products/1760093785582/ultimate-vastu-kit-72f921-636d303f-6f31-48aa-b786-52bfb9a0423d.webp" alt="Vastu Kit"></div>
-            <h2><span lang="en">Vastu Kit</span><span lang="hi">वास्तु किट</span></h2>
-            <p><span lang="en">Balances energies to create harmony & prosperity in your home.</span><span lang="hi">आपके घर में सद्भाव और समृद्धि बनाने के लिए ऊर्जा को संतुलित करता है।</span></p>
-            <a href="https://youtu.be/tddGrFeHUJs" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
-        </article>
-        
-        <!-- Ganesh Shakti Kit Card -->
-        <article class="product-card fade-in" data-tags="ganesha, wisdom, success, blessings, गणेश, बुद्धि, सफलता, आशीर्वाद">
-            <div class="product-image-container"><img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760863866237%2Fganesh-shakti-kit-032002-Gemini_Generated_Image_p8uso9p8uso9p8us.png&w=1920&q=75" alt="Ganesh Shakti Kit"></div>
-            <h2><span lang="en">Ganesh Shakti Kit</span><span lang="hi">गणेश शक्ति किट</span></h2>
-            <p><span lang="en">Invokes Lord Ganesha's blessings for wisdom and success.</span><span lang="hi">ज्ञान और सफलता के लिए भगवान गणेश का आशीर्वाद प्राप्त करता है।</span></p>
-            <a href="https://youtu.be/DM7B0KaV_1I?si=yfnUrDmNL7yd17oA" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
-        </article>
-
-        <!-- Mangal Shanti Kit Card -->
-        <article class="product-card fade-in" data-tags="mangal dosha, peace, shanti, effects, मंगल दोष, शांति, प्रभाव">
-            <div class="product-image-container"><img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760863979848%2Faghori-mangal-shanti-kit-7fd26e-Gemini_Generated_Image_j2o72mj2o72mj2o7.png&w=1920&q=75" alt="Mangal Shanti Kit"></div>
-            <h2><span lang="en">Mangal Shanti Kit</span><span lang="hi">मंगल शांति किट</span></h2>
-            <p><span lang="en">Reduces the effects of Mangal dosha and enhances peace.</span><span lang="hi">मंगल दोष के प्रभाव को कम करता है और शांति बढ़ाता है।</span></p>
-            <a href="https://youtube.com/shorts/ga0S7W-1i3w" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
-        </article>
-        
-        <!-- Vyapar Vruddhi Kit Card -->
-        <article class="product-card fade-in" data-tags="business, wealth, growth, money, success, vyapar, vruddhi, व्यापार, वृद्धि, धन, सफलता">
-            <div class="product-image-container"><img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760864026762%2Fvyapar-vruddhi-kit-ff1705-Gemini_Generated_Image_5gl5tj5gl5tj5gl5.png&w=1920&q=75" alt="Vyapar Vruddhi Kit"></div>
-            <h2><span lang="en">Vyapar Vruddhi Kit</span><span lang="hi">व्यापार वृद्धि किट</span></h2>
-            <p><span lang="en">Attracts wealth, growth, and success in business ventures.</span><span lang="hi">व्यापारिक उपक्रमों में धन, वृद्धि और सफलता को आकर्षित करता है।</span></p>
-            <a href="https://youtu.be/0MQesD5pcQk" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
-        </article>
-
-        <!-- Aghori Evil Eye Locket Card -->
-        <article class="product-card fade-in" data-tags="evil eye, negativity, protection, shields, aghori, बुरी नजर, नकारात्मकता, सुरक्षा, कवच">
-            <div class="product-image-container"><img src="https://tfu-media.s3.ap-south-1.amazonaws.com/products/1759680797340/aghori-evil-eye-locket-edb358-Gemini_Generated_Image_5j3vl25j3vl25j3v.webp" alt="Aghori Evil Eye Locket"></div>
-            <h2><span lang="en">Aghori Evil Eye Locket</span><span lang="hi">अघोरी बुरी नजर लॉकेट</span></h2>
-            <p><span lang="en">Shields you from negativity and evil influences.</span><span lang="hi">आपको नकारात्मकता और बुरी शक्तियों से बचाता है।</span></p>
-            <a href="https://youtu.be/vNgW9dsJW2I" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
-        </article>
-        
-        <!-- Rudraksha Set Card -->
-        <article class="product-card fade-in" data-tags="rudraksha, sacred energy, mind, body, soul, रुद्राक्ष, पवित्र ऊर्जा, मन, शरीर, आत्मा">
-            <div class="product-image-container"><img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760096235095%2Frudraksha-set-952e16-Gemini_Generated_Image_xxzji7xxzji7xxzj%2520%25281%2529.webp&w=1920&q=75" alt="Rudraksha Set"></div>
-            <h2><span lang="en">Rudraksha Set</span><span lang="hi">रुद्राक्ष सेट</span></h2>
-            <p><span lang="en">Empowers your mind, body, and soul with sacred energy.</span><span lang="hi">आपके मन, शरीर और आत्मा को पवित्र ऊर्जा से सशक्त बनाता है।</span></p>
-            <a href="https://www.canva.com/design/DAGrFe5jOTY/4RfpS877zJtx67V_88W-qA/view?utlId=hc4f44a65ff" class="cta-button pdf"><i class="fa-solid fa-file-pdf"></i> <span lang="en">Open Here</span><span lang="hi">यहाँ खोलें</span></a>
-        </article>
-
-        <!-- Kuber Yakshani Potli Card -->
-        <article class="product-card fade-in" data-tags="kuber, fortune, success, endeavor, potli, money, कुबेर, भाग्य, सफलता, पोटली">
-            <div class="product-image-container"><img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1759681522495%2Fkuber-yakshani-potli-bf4d9b-WhatsApp%2520Image%25202025-10-05%2520at%252021.05.03%2520%25281%2529.jpg&w=1920&q=75" alt="Kuber Yakshani Potli"></div>
-            <h2><span lang="en">Kuber Yakshani Potli</span><span lang="hi">कुबेर यक्षिणी पोटली</span></h2>
-            <p><span lang="en">Opens pathways to fortune and success in every endeavor.</span><span lang="hi">हर प्रयास में भाग्य और सफलता के मार्ग खोलता है।</span></p>
-            <a href="https://youtu.be/PcJtspaEkyM" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
-        </article>
-
-        <!-- GajLaxmi Sadhna Kit Card -->
-        <article class="product-card fade-in" data-tags="ganesha, lakshmi, gajlaxmi, wealth, prosperity, success, fortune, sadhna, diwali, blessings, finance, गणेश, लक्ष्मी, गजलक्ष्मी, धन, समृद्धि, सफलता, सौभाग्य, साधना, दिवाली, आशीर्वाद, वित्त">
-            <div class="product-image-container">
-                <img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760255007948%2Fgajlaxmi-sadhna-kit-cb1fce-ganesh_lakshami_moorti_kit_hero_pic.webp&w=1920&q=75" alt="GajLaxmi Sadhna Kit">
+    <div class="container">
+        <!-- Main Product Grid -->
+        <main class="product-grid" id="product-grid">
+            <!-- All your product <article> cards go here exactly as they were before -->
+            <!-- No Results Message -->
+            <div id="no-results">
+                <span lang="en">No products found matching your search.</span>
+                <span lang="hi">आपकी खोज से मेल खाने वाला कोई उत्पाद नहीं मिला।</span>
             </div>
-            <h2><span lang="en">GajLaxmi Sadhna Kit</span><span lang="hi">गजलक्ष्मी साधना किट</span></h2>
-            <p><span lang="en">Invokes the combined blessings of Lord Ganesha and Goddess Lakshmi for immense wealth, success, and removal of obstacles.</span><span lang="hi">अपार धन, सफलता और बाधाओं को दूर करने के लिए भगवान गणेश और देवी लक्ष्मी का संयुक्त आशीर्वाद प्राप्त करें।</span></p>
-            <a href="https://www.canva.com/design/DAG1lIc-2TM/RRx-I2EmC4a0mmQApRzhhQ/view?utm_content=DAG1lIc-2TM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h4e483b71a1" class="cta-button pdf"><i class="fa-solid fa-file-pdf"></i> <span lang="en">Open Here</span><span lang="hi">यहाँ खोलें</span></a>
-        </article>
-    </main>
+
+            <!-- 12 Jyotirlinga Chowki Card -->
+            <article class="product-card fade-in" data-tags="shiva, mahadev, jyotirlinga, 12, blessings, divine, spiritual, devotion, puja, chowki, temple, peace, energy, शिव, महादेव, ज्योतिर्लिंग, १२, आशीर्वाद, दिव्य, आध्यात्मिक, भक्ति, पूजा, चौकी, मंदिर, शांति, ऊर्जा">
+                <div class="product-image-container">
+                    <img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760023060107%2F12-jyotirlinga-chowki-d98c6c-ChatGPT%2520Image%2520Oct%25209%252C%25202025%252C%252006_37_02%2520PM.webp&w=1920&q=75" alt="12 Jyotirlinga Chowki">
+                </div>
+                <h2><span lang="en">12 Jyotirlinga Chowki</span><span lang="hi">१२ ज्योतिर्लिंग चौकी</span></h2>
+                <p><span lang="en">Brings the divine presence and blessings of all 12 sacred Jyotirlingas into your home. A powerful medium for devotion and spiritual peace.</span><span lang="hi">आपके घर में सभी 12 पवित्र ज्योतिर्लिंगों की दिव्य उपस्थिति और आशीर्वाद लाता है। भक्ति और आध्यात्मिक शांति के लिए एक शक्तिशाली माध्यम।</span></p>
+                <a href="https://www.canva.com/design/DAGzmCasR30/SoQqfsQa0L8-Brcud7lyVg/view?utm_content=DAGzmCasR30&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hcae1e9e607" target="_blank" class="cta-button pdf"><i class="fa-solid fa-file-pdf"></i> <span lang="en">Open Here</span><span lang="hi">यहाँ खोलें</span></a>
+            </article>
+
+            <!-- Bagla Mukhi Card -->
+            <article class="product-card fade-in" data-tags="victory, protection, strength, obstacles, बगलामुखी, विजय, सुरक्षा, शक्ति, बाधाओं">
+                <div class="product-image-container"><img src="https://tfu-media.s3.ap-south-1.amazonaws.com/products/1759930148093/bagla-mukhi-kavach-73c597-Gemini_Generated_Image_stx2hnstx2hnstx2.webp" alt="Bagla Mukhi Kit"></div>
+                <h2><span lang="en">Bagla Mukhi</span><span lang="hi">बगलामुखी</span></h2>
+                <p><span lang="en">Brings victory, protection, and strength against obstacles.</span><span lang="hi">बाधाओं के खिलाफ विजय, सुरक्षा और शक्ति लाता है।</span></p>
+                <a href="https://youtu.be/tdAj4u2lKcE" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
+            </article>
+
+            <!-- Vastu Kit Card -->
+            <article class="product-card fade-in" data-tags="vastu, harmony, prosperity, home, energies, वास्तु, सद्भाव, समृद्धि, घर, ऊर्जा">
+                <div class="product-image-container"><img src="https://tfu-media.s3.ap-south-1.amazonaws.com/products/1760093785582/ultimate-vastu-kit-72f921-636d303f-6f31-48aa-b786-52bfb9a0423d.webp" alt="Vastu Kit"></div>
+                <h2><span lang="en">Vastu Kit</span><span lang="hi">वास्तु किट</span></h2>
+                <p><span lang="en">Balances energies to create harmony & prosperity in your home.</span><span lang="hi">आपके घर में सद्भाव और समृद्धि बनाने के लिए ऊर्जा को संतुलित करता है।</span></p>
+                <a href="https://youtu.be/tddGrFeHUJs" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
+            </article>
+            
+            <!-- Ganesh Shakti Kit Card -->
+            <article class="product-card fade-in" data-tags="ganesha, wisdom, success, blessings, गणेश, बुद्धि, सफलता, आशीर्वाद">
+                <div class="product-image-container"><img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760863866237%2Fganesh-shakti-kit-032002-Gemini_Generated_Image_p8uso9p8uso9p8us.png&w=1920&q=75" alt="Ganesh Shakti Kit"></div>
+                <h2><span lang="en">Ganesh Shakti Kit</span><span lang="hi">गणेश शक्ति किट</span></h2>
+                <p><span lang="en">Invokes Lord Ganesha's blessings for wisdom and success.</span><span lang="hi">ज्ञान और सफलता के लिए भगवान गणेश का आशीर्वाद प्राप्त करता है।</span></p>
+                <a href="https://youtu.be/DM7B0KaV_1I?si=yfnUrDmNL7yd17oA" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
+            </article>
+
+            <!-- Mangal Shanti Kit Card -->
+            <article class="product-card fade-in" data-tags="mangal dosha, peace, shanti, effects, मंगल दोष, शांति, प्रभाव">
+                <div class="product-image-container"><img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760863979848%2Faghori-mangal-shanti-kit-7fd26e-Gemini_Generated_Image_j2o72mj2o72mj2o7.png&w=1920&q=75" alt="Mangal Shanti Kit"></div>
+                <h2><span lang="en">Mangal Shanti Kit</span><span lang="hi">मंगल शांति किट</span></h2>
+                <p><span lang="en">Reduces the effects of Mangal dosha and enhances peace.</span><span lang="hi">मंगल दोष के प्रभाव को कम करता है और शांति बढ़ाता है।</span></p>
+                <a href="https://youtube.com/shorts/ga0S7W-1i3w" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
+            </article>
+            
+            <!-- Vyapar Vruddhi Kit Card -->
+            <article class="product-card fade-in" data-tags="business, wealth, growth, money, success, vyapar, vruddhi, व्यापार, वृद्धि, धन, सफलता">
+                <div class="product-image-container"><img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760864026762%2Fvyapar-vruddhi-kit-ff1705-Gemini_Generated_Image_5gl5tj5gl5tj5gl5.png&w=1920&q=75" alt="Vyapar Vruddhi Kit"></div>
+                <h2><span lang="en">Vyapar Vruddhi Kit</span><span lang="hi">व्यापार वृद्धि किट</span></h2>
+                <p><span lang="en">Attracts wealth, growth, and success in business ventures.</span><span lang="hi">व्यापारिक उपक्रमों में धन, वृद्धि और सफलता को आकर्षित करता है।</span></p>
+                <a href="https://youtu.be/0MQesD5pcQk" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
+            </article>
+
+            <!-- Aghori Evil Eye Locket Card -->
+            <article class="product-card fade-in" data-tags="evil eye, negativity, protection, shields, aghori, बुरी नजर, नकारात्मकता, सुरक्षा, कवच">
+                <div class="product-image-container"><img src="https://tfu-media.s3.ap-south-1.amazonaws.com/products/1759680797340/aghori-evil-eye-locket-edb358-Gemini_Generated_Image_5j3vl25j3vl25j3v.webp" alt="Aghori Evil Eye Locket"></div>
+                <h2><span lang="en">Aghori Evil Eye Locket</span><span lang="hi">अघोरी बुरी नजर लॉकेट</span></h2>
+                <p><span lang="en">Shields you from negativity and evil influences.</span><span lang="hi">आपको नकारात्मकता और बुरी शक्तियों से बचाता है।</span></p>
+                <a href="https://youtu.be/vNgW9dsJW2I" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
+            </article>
+            
+            <!-- Rudraksha Set Card -->
+            <article class="product-card fade-in" data-tags="rudraksha, sacred energy, mind, body, soul, रुद्राक्ष, पवित्र ऊर्जा, मन, शरीर, आत्मा">
+                <div class="product-image-container"><img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760096235095%2Frudraksha-set-952e16-Gemini_Generated_Image_xxzji7xxzji7xxzj%2520%25281%2529.webp&w=1920&q=75" alt="Rudraksha Set"></div>
+                <h2><span lang="en">Rudraksha Set</span><span lang="hi">रुद्राक्ष सेट</span></h2>
+                <p><span lang="en">Empowers your mind, body, and soul with sacred energy.</span><span lang="hi">आपके मन, शरीर और आत्मा को पवित्र ऊर्जा से सशक्त बनाता है।</span></p>
+                <a href="https://www.canva.com/design/DAGrFe5jOTY/4RfpS877zJtx67V_88W-qA/view?utlId=hc4f44a65ff" class="cta-button pdf"><i class="fa-solid fa-file-pdf"></i> <span lang="en">Open Here</span><span lang="hi">यहाँ खोलें</span></a>
+            </article>
+
+            <!-- Kuber Yakshani Potli Card -->
+            <article class="product-card fade-in" data-tags="kuber, fortune, success, endeavor, potli, money, कुबेर, भाग्य, सफलता, पोटली">
+                <div class="product-image-container"><img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1759681522495%2Fkuber-yakshani-potli-bf4d9b-WhatsApp%2520Image%25202025-10-05%2520at%252021.05.03%2520%25281%2529.jpg&w=1920&q=75" alt="Kuber Yakshani Potli"></div>
+                <h2><span lang="en">Kuber Yakshani Potli</span><span lang="hi">कुबेर यक्षिणी पोटली</span></h2>
+                <p><span lang="en">Opens pathways to fortune and success in every endeavor.</span><span lang="hi">हर प्रयास में भाग्य और सफलता के मार्ग खोलता है।</span></p>
+                <a href="https://youtu.be/PcJtspaEkyM" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
+            </article>
+
+            <!-- GajLaxmi Sadhna Kit Card -->
+            <article class="product-card fade-in" data-tags="ganesha, lakshmi, gajlaxmi, wealth, prosperity, success, fortune, sadhna, diwali, blessings, finance, गणेश, लक्ष्मी, गजलक्ष्मी, धन, समृद्धि, सफलता, सौभाग्य, साधना, दिवाली, आशीर्वाद, वित्त">
+                <div class="product-image-container">
+                    <img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760255007948%2Fgajlaxmi-sadhna-kit-cb1fce-ganesh_lakshami_moorti_kit_hero_pic.webp&w=1920&q=75" alt="GajLaxmi Sadhna Kit">
+                </div>
+                <h2><span lang="en">GajLaxmi Sadhna Kit</span><span lang="hi">गजलक्ष्मी साधना किट</span></h2>
+                <p><span lang="en">Invokes the combined blessings of Lord Ganesha and Goddess Lakshmi for immense wealth, success, and removal of obstacles.</span><span lang="hi">अपार धन, सफलता और बाधाओं को दूर करने के लिए भगवान गणेश और देवी लक्ष्मी का संयुक्त आशीर्वाद प्राप्त करें।</span></p>
+                <a href="https://www.canva.com/design/DAG1lIc-2TM/RRx-I2EmC4a0mmQApRzhhQ/view?utm_content=DAG1lIc-2TM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h4e483b71a1" class="cta-button pdf"><i class="fa-solid fa-file-pdf"></i> <span lang="en">Open Here</span><span lang="hi">यहाँ खोलें</span></a>
+            </article>
+        </main>
+    </div>
     
     <!-- Footer -->
     <footer class="page-footer">
-        <!-- Footer content is unchanged -->
-         <div class="footer-section fade-in">
-            <h2><span lang="en">Thank you for choosing Astroji.</span><span lang="hi">एस्ट्रोजी को चुनने के लिए धन्यवाद।</span></h2>
-            <p><span lang="en">May the divine energies of the cosmos guide your journey and fill your life with light and prosperity.</span><span lang="hi">ब्रह्मांड की दिव्य ऊर्जाएं आपकी यात्रा का मार्गदर्शन करें और आपके जीवन को प्रकाश और समृद्धि से भर दें।</span></p>
-        </div>
-        
-        <div class="footer-section fade-in">
-            <h2><span lang="en">Explore More</span><span lang="hi">और अन्वेषण करें</span></h2>
-            <div class="qr-container">
-                <div class="qr-text">
-                    <p><span lang="en">Discover All Astroji Products<br>By scanning the QR code or visiting:<br><a href="https://astroji.thefuture.university/astroji-mall" target="_blank">Astroji</a></span><span lang="hi">सभी एस्ट्रोजी उत्पादों की खोज करें<br>QR कोड स्कैन करके या विज़िट करें:<br><a href="#" target="_blank">एस्ट्रोजी</a></span></p>
+        <div class="container">
+            <!-- Footer content is unchanged -->
+             <div class="footer-section fade-in">
+                <h2><span lang="en">Thank you for choosing Astroji.</span><span lang="hi">एस्ट्रोजी को चुनने के लिए धन्यवाद।</span></h2>
+                <p><span lang="en">May the divine energies of the cosmos guide your journey and fill your life with light and prosperity.</span><span lang="hi">ब्रह्मांड की दिव्य ऊर्जाएं आपकी यात्रा का मार्गदर्शन करें और आपके जीवन को प्रकाश और समृद्धि से भर दें।</span></p>
+            </div>
+            
+            <div class="footer-section fade-in">
+                <h2><span lang="en">Explore More</span><span lang="hi">और अन्वेषण करें</span></h2>
+                <div class="qr-container">
+                    <div class="qr-text">
+                        <p><span lang="en">Discover All Astroji Products<br>By scanning the QR code or visiting:<br><a href="https://astroji.thefuture.university/astroji-mall" target="_blank">Astroji</a></span><span lang="hi">सभी एस्ट्रोजी उत्पादों की खोज करें<br>QR कोड स्कैन करके या विज़िट करें:<br><a href="#" target="_blank">एस्ट्रोजी</a></span></p>
+                    </div>
+                    <img src="https://tfu-media.s3.ap-south-1.amazonaws.com/files/1760864273530-qrcode.png" alt="QR Code for Astroji Products" class="qr-code">
                 </div>
-                <img src="https://tfu-media.s3.ap-south-1.amazonaws.com/files/1760864273530-qrcode.png" alt="QR Code for Astroji Products" class="qr-code">
             </div>
-        </div>
-        
-        <div class="footer-section fade-in">
-            <h2><span lang="en">Stay Connected</span><span lang="hi">जुड़े रहें</span></h2>
-            <p><span lang="en">Follow Astroji on YouTube | Instagram | Whatsapp</span><span lang="hi">एस्ट्रोजी को यूट्यूब | इंस्टाग्राम | व्हाट्सएप पर फॉलो करें</span></p>
-            <div class="social-links">
-                <a href="https://www.youtube.com/@astrolearn_app" target="_blank"><i class="fa-brands fa-youtube"></i><span><span lang="en">Subscribe</span><span lang="hi">सब्सक्राइब</span></span></a>
-                <a href="https://www.instagram.com/astrojiofficial" target="_blank"><i class="fa-brands fa-instagram"></i><span><span lang="en">Follow</span><span lang="hi">फॉलो</span></span></a>
-                <a href="https://chat.whatsapp.com/KTu3RlGXcx53WnjDunoRoF?mode=wwt" target="_blank"><i class="fa-brands fa-whatsapp"></i><span><span lang="en">Join</span><span lang="hi">जुड़ें</span></span></a>
+            
+            <div class="footer-section fade-in">
+                <h2><span lang="en">Stay Connected</span><span lang="hi">जुड़े रहें</span></h2>
+                <p><span lang="en">Follow Astroji on YouTube | Instagram | Whatsapp</span><span lang="hi">एस्ट्रोजी को यूट्यूब | इंस्टाग्राम | व्हाट्सएप पर फॉलो करें</span></p>
+                <div class="social-links">
+                    <a href="https://www.youtube.com/@astrolearn_app" target="_blank"><i class="fa-brands fa-youtube"></i><span><span lang="en">Subscribe</span><span lang="hi">सब्सक्राइब</span></span></a>
+                    <a href="https://www.instagram.com/astrojiofficial" target="_blank"><i class="fa-brands fa-instagram"></i><span><span lang="en">Follow</span><span lang="hi">फॉलो</span></span></a>
+                    <a href="https://chat.whatsapp.com/KTu3RlGXcx53WnjDunoRoF?mode=wwt" target="_blank"><i class="fa-brands fa-whatsapp"></i><span><span lang="en">Join</span><span lang="hi">जुड़ें</span></span></a>
+                </div>
             </div>
-        </div>
-        
-        <div class="customer-support fade-in">
-            <p><span lang="en">Customer Support</span><span lang="hi">ग्राहक सहेयता</span> - <a href="tel:7973938627">7973938627</a></p>
-            <p>Email - <a href="mailto:support@thefuture.university">support@thefuture.university</a></p>
+            
+            <div class="customer-support fade-in">
+                <p><span lang="en">Customer Support</span><span lang="hi">ग्राहक सहेयता</span> - <a href="tel:7973938627">7973938627</a></p>
+                <p>Email - <a href="mailto:support@thefuture.university">support@thefuture.university</a></p>
+            </div>
         </div>
     </footer>
 
-    <!-- NEW Scroll to Top Button -->
+    <!-- Scroll to Top Button -->
     <button id="scroll-to-top-btn" title="Go to top"><i class="fa-solid fa-arrow-up"></i></button>
 
     <script>
@@ -392,7 +687,7 @@
             }, { threshold: 0.1 });
             animatedElements.forEach(el => observer.observe(el));
 
-            // --- 4. NEW: Scroll to Top Button Logic ---
+            // --- 4. Scroll to Top Button Logic ---
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 300) {
                     scrollToTopBtn.classList.add('visible');
