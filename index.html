@@ -36,6 +36,7 @@
         --text-color: #f0e8ff;
         --heading-color: #ffffff;
         --accent-color: #f2862c;
+        --accent-color-soft: #d59156;
         --font-body: 'Poppins', sans-serif;
         --font-heading: 'Cinzel', serif;
         --font-hindi: 'Tiro Devanagari Hindi', serif;
@@ -61,17 +62,18 @@
         left: 0;
         width: 100%;
         height: 100%;
+        will-change: background-position; /* Optimization hint for the browser */
         z-index: -1;
         
         /* Layer 1: Small, dense, slow stars (distant) */
         background-image: 
-            radial-gradient(1px 1px at 20px 30px, #eee, transparent),
-            radial-gradient(1px 1px at 80px 90px, #fff, transparent),
+            radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+            radial-gradient(1.5px 1.5px at 80px 90px, #fff, transparent),
             radial-gradient(1px 1px at 150px 160px, #ddd, transparent),
             radial-gradient(1px 1px at 210px 40px, #fff, transparent);
         background-repeat: repeat;
         background-size: 250px 250px;
-        animation: move-stars-slow 180s linear infinite;
+        animation: move-stars-slow 240s linear infinite;
 
         /* Using multiple pseudo-elements for more layers would be ideal, 
            but for simplicity, we combine them. A more advanced version might use JS.
@@ -85,6 +87,7 @@
         left: 0;
         width: 100%;
         height: 100%;
+        will-change: background-position; /* Optimization hint for the browser */
         z-index: -1;
 
         /* Layer 2: Bigger, sparse, faster stars (closer) */
@@ -95,7 +98,7 @@
             radial-gradient(3px 3px at 350px 350px, #fff, transparent);
         background-repeat: repeat;
         background-size: 400px 400px;
-        animation: move-stars-medium 90s linear infinite;
+        animation: move-stars-medium 120s linear infinite;
     }
 
 
@@ -291,85 +294,187 @@
         transform: scale(1.05); 
     }
 
-    /* 7. Footer Section */
+    /* 7. Footer Section - High-Fidelity Redesign */
     .page-footer { 
-        padding: 40px 20px; 
-        margin-top: 40px; 
-        text-align: center; 
-        background: rgba(0,0,0,0.2); 
-        border-top: 1px solid var(--card-border); 
+        padding: 80px 20px 20px; 
+        margin-top: 60px; 
+        background-color: var(--bg-color); /* Deeper, solid background color */
+        border-top: 1px solid var(--card-border);
     }
-    .footer-section { 
-        max-width: 800px; 
-        margin: 0 auto 40px auto; 
+
+    .footer-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start; /* Align columns to the top */
+        gap: 40px;
+        margin-bottom: 60px;
     }
-    .footer-section h2 { 
-        font-family: var(--font-heading); 
-        font-size: 1.8rem; 
-        color: var(--heading-color); 
-        margin-bottom: 15px; 
+
+    .footer-column {
+        flex: 1;
+        min-width: 250px;
+        text-align: left;
     }
-    .qr-container { 
-        display: flex; 
-        flex-direction: row;
-        justify-content: center;
-        align-items: center; 
-        gap: 30px; 
-        margin-top: 25px; 
+
+    .footer-column h3 {
+        font-family: var(--font-heading);
+        font-size: 1.1rem; /* Slightly smaller for elegance */
+        color: var(--heading-color);
+        margin-bottom: 30px;
+        position: relative; /* For the underline pseudo-element */
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-weight: 700;
     }
-    .qr-code { 
-        width: 150px; 
-        height: 150px; 
-        padding: 10px; 
-        background: white; 
-        border-radius: 15px; 
+
+    /* The short underline from the image */
+    .footer-column h3::after {
+        content: '';
+        position: absolute;
+        bottom: -12px;
+        left: 0;
+        width: 50px;
+        height: 1px;
+        background-color: var(--accent-color-soft);
     }
-    .qr-text { 
-        font-size: 1rem; 
-        text-align: center; 
+
+    /* Column 1: About */
+    .footer-logo {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 1px solid var(--accent-color-soft); /* Use soft accent */
+        margin-bottom: 20px;
     }
-    .qr-text a { 
-        color: var(--accent-color); 
-        font-weight: 600; 
-        text-decoration: none; 
+    .footer-column.about p {
+        font-size: 0.95rem;
+        opacity: 0.8;
+        max-width: 320px;
+        line-height: 1.8;
     }
+
+    /* Column 2: Links */
+    .footer-column.links ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .footer-column.links li {
+        margin-bottom: 20px; /* More space between links */
+    }
+    .footer-column.links a {
+        color: var(--text-color);
+        text-decoration: none;
+        transition: color 0.3s, padding-left 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        opacity: 0.9;
+    }
+    .footer-column.links li:not(.cta-item) a:hover { /* Hover effect for non-button links */
+        color: var(--accent-color-soft);
+        padding-left: 5px;
+    }
+    .footer-column.links i {
+        font-size: 1.2rem; /* Slightly larger icons */
+        opacity: 0.8;
+    }
+
+    .footer-column.links .cta-item a {
+        background-color: var(--accent-color-soft);
+        color: var(--bg-color);
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-weight: 600;
+        opacity: 1;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    .footer-column.links .cta-item a:hover {
+        background-color: #fff;
+        color: var(--bg-color);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Column 3: Connect */
     .social-links { 
         display: flex; 
-        justify-content: center; 
+        justify-content: flex-start; 
         gap: 15px; 
-        margin-top: 25px; 
+        margin-bottom: 30px; 
     }
     .social-links a { 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        gap: 8px; 
         color: var(--text-color); 
         text-decoration: none; 
-        font-size: 0.9rem; 
-        transition: color 0.3s, transform 0.3s; 
+        transition: background-color 0.3s, border-color 0.3s; 
     }
-    .social-links a:hover { 
-        color: var(--accent-color); 
-        transform: translateY(-5px); 
-    }
+    /* This is the key change for the social icon look */
     .social-links i { 
-        font-size: 2rem; 
-        width: 50px; 
-        height: 50px; 
+        font-size: 1.3rem; 
+        width: 42px; 
+        height: 42px; 
         display: flex; 
         align-items: center; 
         justify-content: center; 
-        border-radius: 50%; 
-        background: var(--card-bg); 
+        border-radius: 12px; /* Rounded Square */
+        background: transparent; 
         border: 1px solid var(--card-border); 
+        transition: all 0.3s ease;
     }
-    .customer-support { 
-        margin-top: 30px; 
-        font-size: 0.9rem; 
-        opacity: 0.8; 
+    .social-links a:hover i {
+        background-color: var(--accent-color-soft);
+        border-color: var(--accent-color-soft);
+        color: var(--bg-color);
     }
-    .customer-support a { color: var(--accent-color); }
+
+    .qr-code { 
+        width: 120px; 
+        height: 120px; 
+        padding: 8px; 
+        background: white; 
+        border-radius: 16px; /* More rounded corners */
+        margin-top: 15px;
+    }
+    .qr-text { 
+        font-size: 0.95rem; 
+        opacity: 0.8;
+    }
+
+    /* Footer Bottom Bar */
+    .footer-bottom {
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid var(--card-border);
+        font-size: 0.9rem;
+        color: var(--text-color);
+        opacity: 0.6; /* More subtle */
+    }
+
+    /* Responsive adjustments for the new footer */
+    @media (max-width: 768px) {
+        .footer-container {
+            text-align: center;
+        }
+        .footer-column {
+            text-align: center;
+            min-width: 100%;
+        }
+        .footer-column h3::after {
+            left: 50%;
+            transform: translateX(-50%); /* Center the underline on mobile */
+        }
+        .social-links, .footer-column.about p {
+            justify-content: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .qr-code {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
 
     /* 8. Scroll to Top Button */
     #scroll-to-top-btn {
@@ -592,35 +697,65 @@
     <!-- Footer -->
     <footer class="page-footer">
         <div class="container">
-            <!-- Footer content is unchanged -->
-             <div class="footer-section fade-in">
-                <h2><span lang="en">Thank you for choosing Astroji.</span><span lang="hi">एस्ट्रोजी को चुनने के लिए धन्यवाद।</span></h2>
-                <p><span lang="en">May the divine energies of the cosmos guide your journey and fill your life with light and prosperity.</span><span lang="hi">ब्रह्मांड की दिव्य ऊर्जाएं आपकी यात्रा का मार्गदर्शन करें और आपके जीवन को प्रकाश और समृद्धि से भर दें।</span></p>
-            </div>
-            
-            <div class="footer-section fade-in">
-                <h2><span lang="en">Explore More</span><span lang="hi">और अन्वेषण करें</span></h2>
-                <div class="qr-container">
-                    <div class="qr-text">
-                        <p><span lang="en">Discover All Astroji Products<br>By scanning the QR code or visiting:<br><a href="https://astroji.thefuture.university/astroji-mall" target="_blank">Astroji</a></span><span lang="hi">सभी एस्ट्रोजी उत्पादों की खोज करें<br>QR कोड स्कैन करके या विज़िट करें:<br><a href="#" target="_blank">एस्ट्रोजी</a></span></p>
+            <div class="footer-container">
+
+                <!-- Column 1: About Astroji -->
+                <div class="footer-column about">
+                    <img src="https://astroji.thefuture.university/assets/assets/images/logo.f4052b287762d9b75dd6b6d53e471448.png" alt="Astroji Logo" class="footer-logo">
+                    <p>
+                        <span lang="en">Guiding your spiritual journey with authentic products for cosmic well-being and prosperity.</span>
+                        <span lang="hi">ब्रह्मांडीय कल्याण और समृद्धि के लिए प्रामाणिक उत्पादों के साथ आपकी आध्यात्मिक यात्रा का मार्गदर्शन।</span>
+                    </p>
+                </div>
+
+                <!-- Column 2: Quick Links & Support -->
+                <div class="footer-column links">
+                    <h3>
+                        <span lang="en">Support & Info</span>
+                        <span lang="hi">सहायता और जानकारी</span>
+                    </h3>
+                    <ul>
+                        <!-- 1. This is now the first item and has a class for styling -->
+                        <li class="cta-item">
+                            <a href="https://astroji.thefuture.university/astroji-mall" target="_blank">
+                                <i class="fa-solid fa-compass"></i>
+                                <span lang="en">Explore All Products</span>
+                                <span lang="hi">सभी उत्पाद देखें</span>
+                            </a>
+                        </li>
+                        <!-- The contact info is now secondary, as it should be -->
+                        <li><a href="tel:7973938627">
+                            <i class="fa-solid fa-phone"></i> 7973938627
+                        </a></li>
+                        <li><a href="mailto:support@thefuture.university">
+                            <i class="fa-solid fa-envelope"></i> support@thefuture.university
+                        </a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Stay Connected -->
+                <div class="footer-column connect">
+                    <h3>
+                        <span lang="en">Stay Connected</span>
+                        <span lang="hi">जुड़े रहें</span>
+                    </h3>
+                    <div class="social-links">
+                        <a href="https://www.youtube.com/@astrolearn_app" target="_blank" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="https://www.instagram.com/astrojiofficial" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://chat.whatsapp.com/KTu3RlGXcx53WnjDunoRoF?mode=wwt" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
                     </div>
+                    <p class="qr-text">
+                        <span lang="en">Scan to visit the Astroji Mall</span>
+                        <span lang="hi">एस्ट्रोजी मॉल पर जाने के लिए स्कैन करें</span>
+                    </p>
                     <img src="https://tfu-media.s3.ap-south-1.amazonaws.com/files/1760864273530-qrcode.png" alt="QR Code for Astroji Products" class="qr-code">
                 </div>
+
             </div>
-            
-            <div class="footer-section fade-in">
-                <h2><span lang="en">Stay Connected</span><span lang="hi">जुड़े रहें</span></h2>
-                <p><span lang="en">Follow Astroji on YouTube | Instagram | Whatsapp</span><span lang="hi">एस्ट्रोजी को यूट्यूब | इंस्टाग्राम | व्हाट्सएप पर फॉलो करें</span></p>
-                <div class="social-links">
-                    <a href="https://www.youtube.com/@astrolearn_app" target="_blank"><i class="fa-brands fa-youtube"></i><span><span lang="en">Subscribe</span><span lang="hi">सब्सक्राइब</span></span></a>
-                    <a href="https://www.instagram.com/astrojiofficial" target="_blank"><i class="fa-brands fa-instagram"></i><span><span lang="en">Follow</span><span lang="hi">फॉलो</span></span></a>
-                    <a href="https://chat.whatsapp.com/KTu3RlGXcx53WnjDunoRoF?mode=wwt" target="_blank"><i class="fa-brands fa-whatsapp"></i><span><span lang="en">Join</span><span lang="hi">जुड़ें</span></span></a>
-                </div>
-            </div>
-            
-            <div class="customer-support fade-in">
-                <p><span lang="en">Customer Support</span><span lang="hi">ग्राहक सहेयता</span> - <a href="tel:7973938627">7973938627</a></p>
-                <p>Email - <a href="mailto:support@thefuture.university">support@thefuture.university</a></p>
+
+            <!-- Footer Bottom Bar -->
+            <div class="footer-bottom">
+                <p>&copy; 2024 Astroji. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
