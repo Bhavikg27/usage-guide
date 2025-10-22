@@ -476,34 +476,36 @@
         }
     }
 
-    /* 8. Scroll to Top Button */
-    #scroll-to-top-btn {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 45px;
-        height: 45px;
-        background-color: var(--accent-color);
-        color: var(--bg-color);
-        border: none;
-        border-radius: 50%;
-        font-size: 1.2rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1001;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
-        transform: translateY(20px);
+/* Add this CSS with your other navbar styles */
+.share-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 50%; /* Make it a circle */
+    width: 44px; /* Match height of other elements */
+    height: 44px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex-shrink: 0;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.share-btn:hover { 
+    background: var(--accent-color-soft);
+    color: var(--bg-color);
+    transform: scale(1.1);
+}
+
+/* For smaller screens, ensure it fits well */
+@media (max-width: 768px) {
+    .share-btn {
+        width: 40px;
+        height: 40px;
     }
-    #scroll-to-top-btn.visible {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-    }
-    #scroll-to-top-btn:hover { background-color: #fff; }
+}
 
     /* 9. Animations & Mobile Optimizations */
     .fade-in { 
@@ -531,6 +533,88 @@
 }
 .community-card h3 { font-family: var(--font-heading); font-size: 1.8rem; margin-bottom: 10px; }
 .community-card p { margin-bottom: 20px; }
+
+    /* --- Combined FAB & Scroll-to-Top --- */
+    .fab-container {
+        position: fixed;
+        bottom: 25px;
+        right: 25px; /* --- MOVED TO THE RIGHT --- */
+        z-index: 1000;
+        cursor: pointer;
+        opacity: 0; /* Starts completely hidden */
+        visibility: hidden;
+        transform: scale(0.8);
+        transition: opacity 0.4s ease, visibility 0.4s ease, transform 0.4s ease;
+    }
+    .fab-container.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1);
+    }
+
+    .fab-main-button {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: var(--accent-color);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--bg-color);
+        font-size: 1.8rem;
+        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), background-color 0.3s ease;
+        position: relative; /* Needed for positioning icons on top of each other */
+        overflow: hidden; /* Hide icons as they animate out */
+    }
+
+    /* Base state for all icons inside the main button */
+    .fab-main-button i {
+        position: absolute;
+        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease;
+    }
+
+    /* --- STATE 1: Default (Top of page) --- */
+    .icon-plus { transform: rotate(0deg) scale(1); }
+    .icon-arrow-up { transform: rotate(180deg) scale(0); opacity: 0; }
+    .icon-close { display: none; } /* Managed by JS/active class */
+
+    /* --- STATE 2: Scrolled Down (Arrow is visible) --- */
+    .fab-container.is-scrolled .icon-plus { transform: rotate(-180deg) scale(0); opacity: 0; }
+    .fab-container.is-scrolled .icon-arrow-up { transform: rotate(0deg) scale(1); opacity: 1; }
+
+    /* --- STATE 3: Attention Seeking (Arrow flips back to Plus) --- */
+    .fab-container.attention-seek .icon-plus { transform: rotate(0deg) scale(1); opacity: 1; }
+    .fab-container.attention-seek .icon-arrow-up { transform: rotate(180deg) scale(0); opacity: 0; }
+
+    /* --- STATE 4: Menu is Active/Open (Show Close 'X') --- */
+    .fab-container.active .fab-main-button { transform: rotate(360deg); }
+    .fab-container.active .icon-plus, .fab-container.active .icon-arrow-up { transform: scale(0); opacity: 0; }
+    .fab-container.active .icon-close { display: block; transform: scale(1); }
+
+    /* Wiggle Animation */
+    @keyframes wiggle {
+        0%, 100% { transform: rotate(0deg) scale(1.1); }
+        25% { transform: rotate(-10deg) scale(1.1); }
+        50% { transform: rotate(10deg) scale(1.1); }
+        75% { transform: rotate(-5deg) scale(1.1); }
+    }
+
+    .fab-container.is-wiggling .fab-main-button {
+        animation: wiggle 0.8s ease-in-out;
+    }
+
+    /* Social options styling remains mostly the same */
+    .fab-options { position: absolute; bottom: 75px; left: 5px; display: flex; flex-direction: column; gap: 15px; }
+    .fab-option { width: 50px; height: 50px; border-radius: 50%; background-color: #FFF; color: #333; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); opacity: 0; transform: translateY(20px) scale(0.5); transition: all 0.3s ease; pointer-events: none; }
+    .fab-container.active .fab-option { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+    .fab-container.active .fab-option:nth-child(1) { transition-delay: 0.2s; }
+    .fab-container.active .fab-option:nth-child(2) { transition-delay: 0.1s; }
+    .fab-container.active .fab-option:nth-child(3) { transition-delay: 0s; }
+    .fab-whatsapp { background-color: #25D366; color: #FFF; }
+    .fab-instagram { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); color: #FFF; }
+    .fab-youtube { background-color: #FF0000; color: #FFF; }
+    .fab-option:hover { transform: scale(1.15) !important; }
 
     /* --- Media Queries for Responsiveness --- */
     
@@ -566,12 +650,15 @@
 
     @media (max-width: 768px) {
         .lang-switcher span { font-size: 0; } 
-        .lang-switcher::before {
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            content: '\f0ac'; /* Globe icon */
-            font-size: 1.1rem;
+        /* Show 'Hi' to switch to Hindi when English is active */
+        .lang-switcher::before { 
+            content: 'Hi'; 
+            font-size: 1rem;
+            font-weight: 600;
         }
+        /* Show 'En' to switch to English when Hindi is active */
+        body.lang-hi .lang-switcher::before { content: 'En'; }
+
         .search-box {
             margin: 0; /* Remove extra margin on mobile */
         }
@@ -610,6 +697,9 @@
             <button class="lang-switcher" id="lang-toggle-btn" title="Change Language">
                 <span lang="en">हिन्दी</span>
                 <span lang="hi">English</span>
+            </button>
+            <button class="share-btn" id="share-btn" title="Share this Guide">
+                <i class="fa-solid fa-share-nodes"></i>
             </button>
         </nav>
     </div>
@@ -771,13 +861,7 @@
                         <a href="https://www.instagram.com/astrojiofficial" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
                         <a href="https://chat.whatsapp.com/KTu3RlGXcx53WnjDunoRoF?mode=wwt" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
                     </div>
-                    <p class="qr-text">
-                        <span lang="en">Scan to visit the Astroji Mall</span>
-                        <span lang="hi">एस्ट्रोजी मॉल पर जाने के लिए स्कैन करें</span>
-                    </p>
-                    <img src="https://tfu-media.s3.ap-south-1.amazonaws.com/files/1760864273530-qrcode.png" alt="QR Code for Astroji Products" class="qr-code">
                 </div>
-
             </div>
 
             <!-- Footer Bottom Bar -->
@@ -786,9 +870,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Scroll to Top Button -->
-    <button id="scroll-to-top-btn" title="Go to top"><i class="fa-solid fa-arrow-up"></i></button>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -849,22 +930,118 @@
             }, { threshold: 0.1 });
             animatedElements.forEach(el => observer.observe(el));
 
-            // --- 4. Scroll to Top Button Logic ---
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 300) {
-                    scrollToTopBtn.classList.add('visible');
-                } else {
-                    scrollToTopBtn.classList.remove('visible');
-                }
-            });
 
-            scrollToTopBtn.addEventListener('click', () => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
+            // --- 5. Combined FAB & Scroll-to-Top Logic (Improved Functionality) ---
+            const fabContainer = document.getElementById('fab-container');
+            const fabMainButton = document.getElementById('fab-main-button');
+            let attentionInterval; // To hold our interval timer
+            let attentionTimeout;  // To hold the timeout that reverts the animation
+
+            if (fabContainer && fabMainButton) {
+                // --- Initial Appearance ---
+                setTimeout(() => {
+                    fabContainer.classList.add('visible');
+                }, 500);
+
+                // --- Scroll Detection ---
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 300) {
+                        fabContainer.classList.add('is-scrolled');
+                        startAttentionSeeker();
+                    } else {
+                        fabContainer.classList.remove('is-scrolled');
+                        stopAttentionSeeker();
+                    }
                 });
-            });
+
+                // --- Click Handler (New Logic) ---
+                fabMainButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    
+                    // CASE 1: Menu is already open. Action: Close it.
+                    if (fabContainer.classList.contains('active')) {
+                        fabContainer.classList.remove('active');
+                        return;
+                    }
+                    
+                    // CASE 2: Button is in 'attention-seek' mode (+ sign is showing). Action: Open the menu.
+                    if (fabContainer.classList.contains('attention-seek')) {
+                        stopAttentionSeeker(); // Stop any pending animations
+                        fabContainer.classList.add('active');
+                        return;
+                    }
+
+                    // CASE 3: Default behavior.
+                    if (fabContainer.classList.contains('is-scrolled')) {
+                        // Scrolled down -> Scroll to top
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        // At the top -> Open the menu
+                        fabContainer.classList.add('active');
+                    }
+                });
+
+                // --- Attention-Grabbing Animation Logic (New Logic) ---
+                function startAttentionSeeker() {
+                    if (attentionInterval) return;
+
+                    attentionInterval = setInterval(() => {
+                        if (!fabContainer.classList.contains('active')) {
+                            // 1. Flip to Plus icon
+                            fabContainer.classList.add('attention-seek');
+
+                            // 2. Wiggle after a short delay
+                            setTimeout(() => {
+                                fabContainer.classList.add('is-wiggling');
+                            }, 300);
+
+                            // 3. Set a timeout to revert the animation back to the arrow
+                            //    We store this timeout so we can cancel it if the user clicks the button.
+                            const animationDuration = 4000; // INCREASED: Now stays as '+' for 4 seconds
+                            attentionTimeout = setTimeout(() => {
+                                fabContainer.classList.remove('attention-seek');
+                                fabContainer.classList.remove('is-wiggling');
+                            }, animationDuration); 
+                        }
+                    }, 9000); // Repeats every 9 seconds (5s pause + 4s animation)
+                }
+
+                function stopAttentionSeeker() {
+                    // Clear both the interval and any pending animation timeout
+                    clearInterval(attentionInterval);
+                    clearTimeout(attentionTimeout);
+                    attentionInterval = null;
+                    // Immediately remove animation classes to prevent them from getting stuck
+                    fabContainer.classList.remove('attention-seek');
+                    fabContainer.classList.remove('is-wiggling');
+                }
+                
+                // Close menu if user clicks elsewhere
+                document.addEventListener('click', (event) => {
+                    if (!fabContainer.contains(event.target) && fabContainer.classList.contains('active')) {
+                        fabContainer.classList.remove('active');
+                    }
+                });
+            }
         });
     </script>
+
+<!-- Combined Floating Action Button (FAB) & Scroll-to-Top -->
+<div class="fab-container" id="fab-container">
+    <!-- The expanding social media options remain the same -->
+    <div class="fab-options">
+        <a href="https://www.youtube.com/@astrolearn_app" target="_blank" class="fab-option fab-youtube" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        <a href="https://www.instagram.com/astrojiofficial" target="_blank" class="fab-option fab-instagram" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="https://chat.whatsapp.com/KTu3RlGXcx53WnjDunoRoF?mode=wwt" target="_blank" class="fab-option fab-whatsapp" title="Join our Community"><i class="fa-brands fa-whatsapp"></i></a>
+    </div>
+
+    <!-- The main button now contains all three state icons -->
+    <div class="fab-main-button" id="fab-main-button">
+        <i class="fa-solid fa-plus icon-plus"></i>
+        <i class="fa-solid fa-arrow-up icon-arrow-up"></i>
+        <i class="fa-solid fa-xmark icon-close"></i>
+    </div>
+</div>
+
 </body>
 </html>
