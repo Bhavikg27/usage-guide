@@ -879,7 +879,7 @@
             const productCards = document.querySelectorAll('.product-card');
             const noResultsMessage = document.getElementById('no-results');
             const body = document.body;
-            const scrollToTopBtn = document.getElementById('scroll-to-top-btn');
+            const shareButton = document.getElementById('share-btn');
 
             // --- 1. Language Toggling Functionality ---
             const setLanguage = (lang) => {
@@ -917,8 +917,45 @@
                 });
                 noResultsMessage.style.display = visibleCards === 0 ? 'block' : 'none';
             });
+            
+            // --- 3. Share Button Functionality --- (*** NEW CODE BLOCK ***)
+            if (shareButton) {
+                shareButton.addEventListener('click', async () => {
+                    const shareData = {
+                        title: document.title,
+                        text: 'Check out the Astroji Product Usage Guide!',
+                        url: window.location.href
+                    };
 
-            // --- 3. Scroll Animation ---
+                    try {
+                        // Use Web Share API if available (mobile)
+                        if (navigator.share) {
+                            await navigator.share(shareData);
+                            console.log('Guide shared successfully');
+                        } else {
+                            // Fallback for desktop: copy to clipboard
+                            await navigator.clipboard.writeText(shareData.url);
+                            
+                            // Visual feedback for user
+                            const originalIcon = shareButton.innerHTML;
+                            const originalTitle = shareButton.title;
+                            shareButton.innerHTML = '<i class="fa-solid fa-check"></i>';
+                            shareButton.title = 'Link Copied!';
+                            
+                            setTimeout(() => {
+                                shareButton.innerHTML = originalIcon;
+                                shareButton.title = originalTitle;
+                            }, 2000); // Revert after 2 seconds
+                        }
+                    } catch (err) {
+                        console.error('Share failed:', err);
+                        // Optional: alert the user if copy fails too
+                        // alert('Could not share or copy the link.'); 
+                    }
+                });
+            }
+
+            // --- 4. Scroll Animation ---
             const animatedElements = document.querySelectorAll('.fade-in');
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
