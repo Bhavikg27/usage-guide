@@ -1,698 +1,566 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Astroji - Products for Spiritual Well-being</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cinzel:wght@400;700&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cinzel:wght@400;700&family=Tiro+Devanagari+Hindi&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
     <style>
-    /* --- NEW KEYFRAMES FOR PARALLAX STARS --- */
-    @keyframes move-stars-slow {
-      from { background-position: 0 0; }
-      to   { background-position: 0 -10000px; }
-    }
-    @keyframes move-stars-medium {
-      from { background-position: 0 0; }
-      to   { background-position: 0 -10000px; }
-    }
-    @keyframes move-stars-fast {
-      from { background-position: 0 0; }
-      to   { background-position: 0 -10000px; }
-    }
-    
-    /* --- CSS STYLES --- */
+        /* --- NEW KEYFRAMES FOR PARALLAX STARS & SHIMMER --- */
+        @keyframes move-stars-slow {
+            from {
+                transform: translateY(0);
+            }
 
-    /* 1. Global Styles & Variables */
-    :root {
-        --bg-color: #0d0521;
-        --card-bg: rgba(255, 255, 255, 0.08);
-        --card-border: rgba(255, 255, 255, 0.2);
-        --text-color: #f0e8ff;
-        --heading-color: #ffffff;
-        --accent-color: #f2862c;
-        --accent-color-soft: #d59156;
-        --font-body: 'Poppins', sans-serif;
-        --font-heading: 'Cinzel', serif;
-        --font-hindi: 'Tiro Devanagari Hindi', serif;
-        --dark-bg: #0c0a1a;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-        font-family: var(--font-body);
-        color: var(--text-color);
-        background-color: var(--dark-bg);
-        min-height: 100vh;
-        overflow-x: hidden;
-        line-height: 1.7;
-    }
-
-    /* --- NEW DYNAMIC STARFIELD BACKGROUND --- */
-    body::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        will-change: background-position; /* Optimization hint for the browser */
-        z-index: -1;
-        
-        /* Layer 1: Small, dense, slow stars (distant) */
-        background-image: 
-            radial-gradient(2px 2px at 20px 30px, #eee, transparent),
-            radial-gradient(1.5px 1.5px at 80px 90px, #fff, transparent),
-            radial-gradient(1px 1px at 150px 160px, #ddd, transparent),
-            radial-gradient(1px 1px at 210px 40px, #fff, transparent);
-        background-repeat: repeat;
-        background-size: 250px 250px;
-        animation: move-stars-slow 240s linear infinite;
-
-        /* Using multiple pseudo-elements for more layers would be ideal, 
-           but for simplicity, we combine them. A more advanced version might use JS.
-           For now, we'll create the illusion with a second, faster layer in an ::after pseudo-element. */
-    }
-
-    body::after {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        will-change: background-position; /* Optimization hint for the browser */
-        z-index: -1;
-
-        /* Layer 2: Bigger, sparse, faster stars (closer) */
-        background-image:
-            radial-gradient(2px 2px at 50px 160px, #ddd, transparent),
-            radial-gradient(2px 2px at 130px 80px, #fff, transparent),
-            radial-gradient(1px 1px at 290px 240px, #eee, transparent),
-            radial-gradient(3px 3px at 350px 350px, #fff, transparent);
-        background-repeat: repeat;
-        background-size: 400px 400px;
-        animation: move-stars-medium 120s linear infinite;
-    }
-
-
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 15px;
-    }
-
-    /* 2. Language Toggling Logic */
-    [lang="hi"] { display: none; }
-    body.lang-hi [lang="hi"] { display: inline; font-family: var(--font-hindi); }
-    body.lang-hi [lang="en"] { display: none; }
-    
-    /* 3. Hero Header Section */
-    .hero {
-        text-align: center;
-        padding: 40px 20px;
-    }
-    .hero-logo { 
-        width: 80px; 
-        height: 80px; 
-        border-radius: 50%; 
-        border: 2px solid var(--accent-color); 
-        margin-bottom: 15px; 
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); 
-    }
-    .hero h1 { 
-        font-family: var(--font-heading); 
-        font-size: 2rem; 
-        color: var(--heading-color); 
-        letter-spacing: 2px; 
-        text-shadow: 0 0 15px rgba(255, 255, 255, 0.3); 
-    }
-
-    /* --- 4. REVAMPED Floating Glass Navbar --- */
-    .sticky-nav-wrapper {
-        position: sticky;
-        top: 15px; /* Space from the top */
-        z-index: 1000;
-        padding: 0 15px;
-    }
-
-    .sticky-nav {
-        max-width: 1200px;
-        margin: 0 auto; /* Center the nav */
-        padding: 10px 20px;
-        background: rgba(19, 9, 41, 0.6); /* More transparent for better glass effect */
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 15px;
-        border-radius: 50px; /* Fully rounded ends */
-        border: 1px solid var(--card-border);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-    }
-
-    .nav-logo-container {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        text-decoration: none;
-    }
-
-    .nav-logo {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--accent-color);
-        flex-shrink: 0;
-    }
-    .nav-title {
-        font-family: var(--font-heading);
-        font-size: 1.2rem;
-        color: var(--heading-color);
-        font-weight: 700;
-        display: none; /* Hidden on small screens */
-    }
-
-    .search-box {
-        flex-grow: 1;
-        max-width: 500px;
-        margin: 0 15px;
-    }
-    #search-input {
-        width: 100%;
-        padding: 10px 20px;
-        font-size: 1rem;
-        color: var(--heading-color);
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 50px;
-        transition: box-shadow 0.3s, background 0.3s;
-    }
-    #search-input::placeholder { color: var(--text-color); opacity: 0.7; }
-    #search-input:focus { 
-        outline: none; 
-        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-        background: rgba(255, 255, 255, 0.15);
-    }
-    
-    .lang-switcher {
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 50px;
-        padding: 8px 15px;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        flex-shrink: 0;
-        color: var(--text-color);
-    }
-    .lang-switcher:hover { background: rgba(255, 255, 255, 0.2); }
-
-    /* 5. Product Grid Layout */
-    .product-grid { 
-        display: grid; 
-        grid-template-columns: 1fr;
-        gap: 25px; 
-        padding: 30px 0; 
-    }
-    #no-results { 
-        display: none; 
-        grid-column: 1 / -1; 
-        text-align: center; 
-        padding: 40px; 
-        font-size: 1.2rem; 
-        color: var(--accent-color); 
-    }
-
-    /* 6. Glassmorphism Product Card */
-    .product-card { 
-        background: var(--card-bg); 
-        border: 1px solid var(--card-border); 
-        border-radius: 15px; 
-        padding: 20px; 
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); 
-        backdrop-filter: blur(12px); 
-        -webkit-backdrop-filter: blur(12px); 
-        display: flex; 
-        flex-direction: column; 
-        text-align: center; 
-        transition: transform 0.3s ease, box-shadow 0.3s ease; 
-    }
-    .product-card:hover { 
-        transform: translateY(-10px); 
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4); 
-    }
-    .product-image-container { 
-        width: 100%; 
-        aspect-ratio: 16 / 9; 
-        margin-bottom: 20px; 
-        border-radius: 10px; 
-        overflow: hidden; 
-        background-color: rgba(0,0,0,0.2); 
-    }
-    .product-card img { 
-        width: 100%; 
-        height: 100%; 
-        object-fit: cover; 
-    }
-    .product-card h2 { 
-        font-family: var(--font-heading); 
-        font-size: 1.4rem; 
-        color: var(--heading-color); 
-        margin-bottom: 10px; 
-    }
-    .product-card p { 
-        font-size: 0.95rem; 
-        color: var(--text-color); 
-        flex-grow: 1; 
-        margin-bottom: 20px; 
-    }
-    .cta-button { 
-        display: inline-flex; 
-        align-items: center; 
-        justify-content: center; 
-        gap: 10px; 
-        padding: 10px 20px; 
-        background-color: var(--accent-color); 
-        color: var(--bg-color); 
-        border-radius: 50px; 
-        text-decoration: none; 
-        font-weight: 600; 
-        transition: background-color 0.3s ease, transform 0.2s ease; 
-        align-self: center; 
-    }
-    .cta-button.pdf { background-color: #e74c3c; }
-    .cta-button:hover { 
-        background-color: #fff; 
-        transform: scale(1.05); 
-    }
-
-    /* 7. Footer Section - High-Fidelity Redesign */
-    .page-footer { 
-        padding: 80px 20px 20px; 
-        margin-top: 60px; 
-        background-color: var(--bg-color); /* Deeper, solid background color */
-        border-top: 1px solid var(--card-border);
-    }
-
-    .footer-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: flex-start; /* Align columns to the top */
-        gap: 40px;
-        margin-bottom: 60px;
-    }
-
-    .footer-column {
-        flex: 1;
-        min-width: 250px;
-        text-align: left;
-    }
-
-    .footer-column h3 {
-        font-family: var(--font-heading);
-        font-size: 1.1rem; /* Slightly smaller for elegance */
-        color: var(--heading-color);
-        margin-bottom: 30px;
-        position: relative; /* For the underline pseudo-element */
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        font-weight: 700;
-    }
-
-    /* The short underline from the image */
-    .footer-column h3::after {
-        content: '';
-        position: absolute;
-        bottom: -12px;
-        left: 0;
-        width: 50px;
-        height: 1px;
-        background-color: var(--accent-color-soft);
-    }
-
-    /* Column 1: About */
-    .footer-logo {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        border: 1px solid var(--accent-color-soft); /* Use soft accent */
-        margin-bottom: 20px;
-    }
-    .footer-column.about p {
-        font-size: 0.95rem;
-        opacity: 0.8;
-        max-width: 320px;
-        line-height: 1.8;
-    }
-
-    /* Column 2: Links */
-    .footer-column.links ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    .footer-column.links li {
-        margin-bottom: 20px; /* More space between links */
-    }
-    .footer-column.links a {
-        color: var(--text-color);
-        text-decoration: none;
-        transition: color 0.3s, padding-left 0.3s;
-        display: inline-flex;
-        align-items: center;
-        gap: 12px;
-        opacity: 0.9;
-    }
-    .footer-column.links li:not(.cta-item) a:hover { /* Hover effect for non-button links */
-        color: var(--accent-color-soft);
-        padding-left: 5px;
-    }
-    .footer-column.links i {
-        font-size: 1.2rem; /* Slightly larger icons */
-        opacity: 0.8;
-    }
-
-    .footer-column.links .cta-item a {
-        background-color: var(--accent-color-soft);
-        color: var(--bg-color);
-        padding: 12px 24px;
-        border-radius: 50px;
-        font-weight: 600;
-        opacity: 1;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-    .footer-column.links .cta-item a:hover {
-        background-color: #fff;
-        color: var(--bg-color);
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Column 3: Connect */
-    .social-links { 
-        display: flex; 
-        justify-content: flex-start; 
-        gap: 15px; 
-        margin-bottom: 30px; 
-    }
-    .social-links a { 
-        color: var(--text-color); 
-        text-decoration: none; 
-        transition: background-color 0.3s, border-color 0.3s; 
-    }
-    /* This is the key change for the social icon look */
-    .social-links i { 
-        font-size: 1.3rem; 
-        width: 42px; 
-        height: 42px; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        border-radius: 12px; /* Rounded Square */
-        background: transparent; 
-        border: 1px solid var(--card-border); 
-        transition: all 0.3s ease;
-    }
-    .social-links a:hover i {
-        background-color: var(--accent-color-soft);
-        border-color: var(--accent-color-soft);
-        color: var(--bg-color);
-    }
-
-    .qr-code { 
-        width: 120px; 
-        height: 120px; 
-        padding: 8px; 
-        background: white; 
-        border-radius: 16px; /* More rounded corners */
-        margin-top: 15px;
-    }
-    .qr-text { 
-        font-size: 0.95rem; 
-        opacity: 0.8;
-    }
-
-    /* Footer Bottom Bar */
-    .footer-bottom {
-        text-align: center;
-        padding-top: 20px;
-        border-top: 1px solid var(--card-border);
-        font-size: 0.9rem;
-        color: var(--text-color);
-        opacity: 0.6; /* More subtle */
-    }
-
-    /* Responsive adjustments for the new footer */
-    @media (max-width: 768px) {
-        .footer-container {
-            text-align: center;
+            to {
+                transform: translateY(-2000px);
+            }
         }
-        .footer-column {
-            text-align: center;
-            min-width: 100%;
+
+        @keyframes move-stars-medium {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-2000px);
+            }
         }
-        .footer-column h3::after {
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0.8;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: scale(0.8);
+            }
+        }
+
+        @keyframes shooting-star {
+            0% {
+                transform: translateX(0) translateY(0) rotate(315deg) scale(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+                transform: translateX(-100px) translateY(100px) rotate(315deg) scale(1);
+            }
+
+            20% {
+                opacity: 0;
+                transform: translateX(-200px) translateY(200px) rotate(315deg) scale(0.5);
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes nebula-pulse {
+            0% {
+                opacity: 0.5;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0.8;
+                transform: scale(1.1);
+            }
+        }
+
+        /* --- CSS STYLES --- */
+        :root {
+            --bg-color: #05020a;
+            --bg-gradient: radial-gradient(circle at 50% 0%, #1a0b2e 0%, #05020a 60%);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-highlight: rgba(255, 255, 255, 0.15);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --glass-blur: blur(16px);
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-accent: #ffd700;
+            --accent-primary: #f2862c;
+            --accent-glow: rgba(242, 134, 44, 0.4);
+            --accent-gradient: linear-gradient(135deg, #f2862c 0%, #d946ef 100%);
+            --font-body: 'Poppins', sans-serif;
+            --font-heading: 'Cinzel', serif;
+            --font-hindi: 'Tiro Devanagari Hindi', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-primary);
+            background-color: var(--bg-color);
+            background-image: var(--bg-gradient);
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.7;
+            position: relative;
+        }
+
+        /* --- DYNAMIC STARFIELD BACKGROUND --- */
+        .star-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 1px;
+            height: 1px;
+            background: transparent;
+            z-index: -1;
+        }
+
+        .stars-small {
+            box-shadow: 1874px 375px #FFF, 1107px 568px #FFF, 936px 784px #FFF, 932px 347px #FFF, 1023px 707px #FFF, 1314px 1482px #FFF, 979px 124px #FFF, 829px 716px #FFF, 576px 1443px #FFF, 1276px 1740px #FFF, 1390px 350px #FFF, 1883px 1477px #FFF, 949px 220px #FFF, 376px 1198px #FFF, 948px 1966px #FFF, 708px 1936px #FFF, 778px 162px #FFF, 1114px 1327px #FFF, 640px 68px #FFF, 180px 1682px #FFF, 23px 1803px #FFF, 11px 348px #FFF, 1393px 199px #FFF, 583px 1100px #FFF, 284px 1098px #FFF, 29px 538px #FFF, 1754px 1898px #FFF, 1329px 828px #FFF, 1591px 671px #FFF, 1706px 1686px #FFF, 1149px 119px #FFF, 78px 133px #FFF, 1660px 427px #FFF, 1002px 1336px #FFF, 183px 1054px #FFF, 1269px 336px #FFF, 1368px 188px #FFF, 1782px 1667px #FFF, 1175px 1133px #FFF, 1332px 1784px #FFF, 1208px 424px #FFF, 1694px 928px #FFF, 1626px 487px #FFF, 86px 1116px #FFF, 938px 1043px #FFF, 1010px 1102px #FFF, 150px 1231px #FFF, 227px 1892px #FFF, 664px 1602px #FFF, 1865px 1334px #FFF, 825px 1449px #FFF, 1597px 1940px #FFF, 858px 1702px #FFF, 1206px 1793px #FFF, 910px 373px #FFF, 838px 80px #FFF, 1423px 1741px #FFF, 1972px 396px #FFF, 1537px 1990px #FFF, 874px 808px #FFF, 254px 715px #FFF, 1252px 1295px #FFF, 1806px 157px #FFF, 1718px 64px #FFF, 777px 274px #FFF, 1937px 137px #FFF, 561px 946px #FFF, 1803px 463px #FFF, 1602px 1041px #FFF, 291px 427px #FFF, 1420px 1771px #FFF, 1037px 1480px #FFF, 452px 1116px #FFF, 1578px 948px #FFF, 394px 1375px #FFF, 557px 1992px #FFF, 1616px 1140px #FFF, 1189px 42px #FFF, 1708px 429px #FFF, 1833px 1562px #FFF, 1209px 111px #FFF, 411px 1403px #FFF, 1481px 1262px #FFF, 1546px 1070px #FFF, 1489px 23px #FFF, 418px 646px #FFF, 517px 420px #FFF, 1653px 1287px #FFF, 197px 1828px #FFF, 406px 1830px #FFF, 461px 1437px #FFF, 1109px 1185px #FFF, 231px 1739px #FFF, 897px 1539px #FFF, 1259px 1771px #FFF, 1273px 468px #FFF, 508px 1451px #FFF, 704px 240px #FFF, 1635px 1082px #FFF, 834px 72px #FFF, 513px 1802px #FFF, 1988px 986px #FFF, 390px 713px #FFF, 248px 690px #FFF, 1912px 1570px #FFF, 1202px 65px #FFF, 377px 263px #FFF, 729px 1447px #FFF, 1815px 1546px #FFF, 527px 1003px #FFF, 1200px 1235px #FFF, 1551px 1503px #FFF, 544px 1666px #FFF, 1886px 711px #FFF, 670px 1658px #FFF, 566px 1731px #FFF, 397px 1211px #FFF, 48px 1853px #FFF, 474px 296px #FFF, 1364px 1872px #FFF, 1532px 842px #FFF, 1138px 3px #FFF, 1984px 1108px #FFF, 976px 265px #FFF, 1630px 587px #FFF, 693px 1747px #FFF, 1197px 348px #FFF, 875px 1385px #FFF, 141px 601px #FFF, 331px 164px #FFF, 1291px 1096px #FFF, 804px 1430px #FFF, 1145px 994px #FFF, 529px 490px #FFF, 1908px 1325px #FFF, 155px 200px #FFF, 1117px 65px #FFF, 870px 773px #FFF, 417px 954px #FFF, 1678px 1398px #FFF, 366px 1230px #FFF, 916px 1944px #FFF, 1364px 1046px #FFF, 1625px 1978px #FFF, 633px 27px #FFF, 1723px 395px #FFF, 761px 1794px #FFF, 564px 829px #FFF, 1408px 752px #FFF, 1085px 572px #FFF, 700px 417px #FFF, 861px 691px #FFF, 1521px 1944px #FFF, 1375px 1105px #FFF, 1107px 813px #FFF, 384px 1418px #FFF, 784px 1576px #FFF, 1812px 912px #FFF, 978px 1829px #FFF, 1404px 1037px #FFF, 76px 1596px #FFF, 734px 125px #FFF, 1129px 1552px #FFF, 1038px 106px #FFF, 1682px 1975px #FFF, 94px 1962px #FFF, 1882px 1713px #FFF, 1588px 1144px #FFF, 1363px 464px #FFF, 45px 915px #FFF, 1954px 962px #FFF, 653px 911px #FFF, 1301px 1932px #FFF, 1321px 1480px #FFF, 1564px 541px #FFF, 65px 38px #FFF, 355px 1927px #FFF, 365px 1079px #FFF, 1737px 1015px #FFF, 387px 541px #FFF, 364px 314px #FFF, 53px 239px #FFF, 528px 1992px #FFF, 996px 246px #FFF, 314px 569px #FFF, 1389px 12px #FFF, 822px 9px #FFF, 667px 1312px #FFF, 296px 340px #FFF, 0px 198px #FFF, 288px 1724px #FFF, 920px 87px #FFF, 1243px 53px #FFF, 1933px 372px #FFF, 1317px 1317px #FFF, 1330px 1280px #FFF, 1457px 542px #FFF, 317px 65px #FFF, 1876px 506px #FFF, 1577px 1122px #FFF;
+            animation: move-stars-slow 100s linear infinite;
+        }
+        .stars-small::after {
+            content: " ";
+            position: absolute;
+            top: 2000px;
+            width: 1px;
+            height: 1px;
+            background: transparent;
+            box-shadow: 1874px 375px #FFF, 1107px 568px #FFF, 936px 784px #FFF, 932px 347px #FFF, 1023px 707px #FFF, 1314px 1482px #FFF, 979px 124px #FFF, 829px 716px #FFF, 576px 1443px #FFF, 1276px 1740px #FFF, 1390px 350px #FFF, 1883px 1477px #FFF, 949px 220px #FFF, 376px 1198px #FFF, 948px 1966px #FFF, 708px 1936px #FFF, 778px 162px #FFF, 1114px 1327px #FFF, 640px 68px #FFF, 180px 1682px #FFF, 23px 1803px #FFF, 11px 348px #FFF, 1393px 199px #FFF, 583px 1100px #FFF, 284px 1098px #FFF, 29px 538px #FFF, 1754px 1898px #FFF, 1329px 828px #FFF, 1591px 671px #FFF, 1706px 1686px #FFF, 1149px 119px #FFF, 78px 133px #FFF, 1660px 427px #FFF, 1002px 1336px #FFF, 183px 1054px #FFF, 1269px 336px #FFF, 1368px 188px #FFF, 1782px 1667px #FFF, 1175px 1133px #FFF, 1332px 1784px #FFF, 1208px 424px #FFF, 1694px 928px #FFF, 1626px 487px #FFF, 86px 1116px #FFF, 938px 1043px #FFF, 1010px 1102px #FFF, 150px 1231px #FFF, 227px 1892px #FFF, 664px 1602px #FFF, 1865px 1334px #FFF, 825px 1449px #FFF, 1597px 1940px #FFF, 858px 1702px #FFF, 1206px 1793px #FFF, 910px 373px #FFF, 838px 80px #FFF, 1423px 1741px #FFF, 1972px 396px #FFF, 1537px 1990px #FFF, 874px 808px #FFF, 254px 715px #FFF, 1252px 1295px #FFF, 1806px 157px #FFF, 1718px 64px #FFF, 777px 274px #FFF, 1937px 137px #FFF, 561px 946px #FFF, 1803px 463px #FFF, 1602px 1041px #FFF, 291px 427px #FFF, 1420px 1771px #FFF, 1037px 1480px #FFF, 452px 1116px #FFF, 1578px 948px #FFF, 394px 1375px #FFF, 557px 1992px #FFF, 1616px 1140px #FFF, 1189px 42px #FFF, 1708px 429px #FFF, 1833px 1562px #FFF, 1209px 111px #FFF, 411px 1403px #FFF, 1481px 1262px #FFF, 1546px 1070px #FFF, 1489px 23px #FFF, 418px 646px #FFF, 517px 420px #FFF, 1653px 1287px #FFF, 197px 1828px #FFF, 406px 1830px #FFF, 461px 1437px #FFF, 1109px 1185px #FFF, 231px 1739px #FFF, 897px 1539px #FFF, 1259px 1771px #FFF, 1273px 468px #FFF, 508px 1451px #FFF, 704px 240px #FFF, 1635px 1082px #FFF, 834px 72px #FFF, 513px 1802px #FFF, 1988px 986px #FFF, 390px 713px #FFF, 248px 690px #FFF, 1912px 1570px #FFF, 1202px 65px #FFF, 377px 263px #FFF, 729px 1447px #FFF, 1815px 1546px #FFF, 527px 1003px #FFF, 1200px 1235px #FFF, 1551px 1503px #FFF, 544px 1666px #FFF, 1886px 711px #FFF, 670px 1658px #FFF, 566px 1731px #FFF, 397px 1211px #FFF, 48px 1853px #FFF, 474px 296px #FFF, 1364px 1872px #FFF, 1532px 842px #FFF, 1138px 3px #FFF, 1984px 1108px #FFF, 976px 265px #FFF, 1630px 587px #FFF, 693px 1747px #FFF, 1197px 348px #FFF, 875px 1385px #FFF, 141px 601px #FFF, 331px 164px #FFF, 1291px 1096px #FFF, 804px 1430px #FFF, 1145px 994px #FFF, 529px 490px #FFF, 1908px 1325px #FFF, 155px 200px #FFF, 1117px 65px #FFF, 870px 773px #FFF, 417px 954px #FFF, 1678px 1398px #FFF, 366px 1230px #FFF, 916px 1944px #FFF, 1364px 1046px #FFF, 1625px 1978px #FFF, 633px 27px #FFF, 1723px 395px #FFF, 761px 1794px #FFF, 564px 829px #FFF, 1408px 752px #FFF, 1085px 572px #FFF, 700px 417px #FFF, 861px 691px #FFF, 1521px 1944px #FFF, 1375px 1105px #FFF, 1107px 813px #FFF, 384px 1418px #FFF, 784px 1576px #FFF, 1812px 912px #FFF, 978px 1829px #FFF, 1404px 1037px #FFF, 76px 1596px #FFF, 734px 125px #FFF, 1129px 1552px #FFF, 1038px 106px #FFF, 1682px 1975px #FFF, 94px 1962px #FFF, 1882px 1713px #FFF, 1588px 1144px #FFF, 1363px 464px #FFF, 45px 915px #FFF, 1954px 962px #FFF, 653px 911px #FFF, 1301px 1932px #FFF, 1321px 1480px #FFF, 1564px 541px #FFF, 65px 38px #FFF, 355px 1927px #FFF, 365px 1079px #FFF, 1737px 1015px #FFF, 387px 541px #FFF, 364px 314px #FFF, 53px 239px #FFF, 528px 1992px #FFF, 996px 246px #FFF, 314px 569px #FFF, 1389px 12px #FFF, 822px 9px #FFF, 667px 1312px #FFF, 296px 340px #FFF, 0px 198px #FFF, 288px 1724px #FFF, 920px 87px #FFF, 1243px 53px #FFF, 1933px 372px #FFF, 1317px 1317px #FFF, 1330px 1280px #FFF, 1457px 542px #FFF, 317px 65px #FFF, 1876px 506px #FFF, 1577px 1122px #FFF;
+        }
+
+        .stars-medium {
+            box-shadow: 735px 1067px #FFF, 1939px 142px #FFF, 1503px 83px #FFF, 339px 1530px #FFF, 945px 799px #FFF, 1109px 1494px #FFF, 32px 460px #FFF, 1218px 1724px #FFF, 1186px 1669px #FFF, 1802px 399px #FFF, 1920px 1188px #FFF, 1865px 553px #FFF, 1346px 725px #FFF, 1114px 1896px #FFF, 1343px 1762px #FFF, 1380px 1416px #FFF, 859px 1398px #FFF, 1848px 1171px #FFF, 1774px 1567px #FFF, 1096px 235px #FFF, 1646px 588px #FFF, 93px 673px #FFF, 440px 848px #FFF, 1251px 857px #FFF, 1891px 182px #FFF, 1388px 366px #FFF, 1619px 977px #FFF, 751px 1573px #FFF, 1940px 682px #FFF, 1090px 1134px #FFF, 220px 1529px #FFF, 1059px 567px #FFF, 485px 1680px #FFF, 422px 390px #FFF, 1060px 1562px #FFF, 1618px 1760px #FFF, 1097px 878px #FFF, 1444px 1779px #FFF, 923px 106px #FFF, 1569px 1892px #FFF, 702px 716px #FFF, 960px 1861px #FFF, 1005px 150px #FFF, 121px 1977px #FFF, 1014px 744px #FFF, 336px 1190px #FFF, 1340px 1849px #FFF, 327px 1657px #FFF, 493px 834px #FFF, 1358px 274px #FFF;
+            animation: move-stars-medium 60s linear infinite;
+        }
+        .stars-medium::after {
+            content: " ";
+            position: absolute;
+            top: 2000px;
+            width: 1px;
+            height: 1px;
+            background: transparent;
+            box-shadow: 735px 1067px #FFF, 1939px 142px #FFF, 1503px 83px #FFF, 339px 1530px #FFF, 945px 799px #FFF, 1109px 1494px #FFF, 32px 460px #FFF, 1218px 1724px #FFF, 1186px 1669px #FFF, 1802px 399px #FFF, 1920px 1188px #FFF, 1865px 553px #FFF, 1346px 725px #FFF, 1114px 1896px #FFF, 1343px 1762px #FFF, 1380px 1416px #FFF, 859px 1398px #FFF, 1848px 1171px #FFF, 1774px 1567px #FFF, 1096px 235px #FFF, 1646px 588px #FFF, 93px 673px #FFF, 440px 848px #FFF, 1251px 857px #FFF, 1891px 182px #FFF, 1388px 366px #FFF, 1619px 977px #FFF, 751px 1573px #FFF, 1940px 682px #FFF, 1090px 1134px #FFF, 220px 1529px #FFF, 1059px 567px #FFF, 485px 1680px #FFF, 422px 390px #FFF, 1060px 1562px #FFF, 1618px 1760px #FFF, 1097px 878px #FFF, 1444px 1779px #FFF, 923px 106px #FFF, 1569px 1892px #FFF, 702px 716px #FFF, 960px 1861px #FFF, 1005px 150px #FFF, 121px 1977px #FFF, 1014px 744px #FFF, 336px 1190px #FFF, 1340px 1849px #FFF, 327px 1657px #FFF, 493px 834px #FFF, 1358px 274px #FFF;
+        }
+
+        .stars-large {
+            box-shadow: 353px 1954px #FFF, 1305px 314px #FFF, 1106px 1104px #FFF, 1909px 1069px #FFF, 54px 1224px #FFF, 1216px 1134px #FFF, 1220px 575px #FFF, 266px 320px #FFF, 116px 1187px #FFF, 1330px 594px #FFF, 1157px 272px #FFF, 1309px 9px #FFF, 61px 1366px #FFF, 919px 1053px #FFF, 942px 377px #FFF, 613px 802px #FFF, 554px 110px #FFF, 735px 964px #FFF, 1987px 948px #FFF, 100px 1581px #FFF;
+            animation: move-stars-medium 40s linear infinite;
+        }
+        .stars-large::after {
+            content: " ";
+            position: absolute;
+            top: 2000px;
+            width: 1px;
+            height: 1px;
+            background: transparent;
+            box-shadow: 353px 1954px #FFF, 1305px 314px #FFF, 1106px 1104px #FFF, 1909px 1069px #FFF, 54px 1224px #FFF, 1216px 1134px #FFF, 1220px 575px #FFF, 266px 320px #FFF, 116px 1187px #FFF, 1330px 594px #FFF, 1157px 272px #FFF, 1309px 9px #FFF, 61px 1366px #FFF, 919px 1053px #FFF, 942px 377px #FFF, 613px 802px #FFF, 554px 110px #FFF, 735px 964px #FFF, 1987px 948px #FFF, 100px 1581px #FFF;
+        }
+
+        /* Nebula Layer */
+        .nebula-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(76, 29, 149, 0.2), transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(244, 63, 94, 0.1), transparent 40%);
+            filter: blur(30px);
+            animation: nebula-pulse 20s ease-in-out infinite alternate;
+        }
+
+        /* Shooting Star Container */
+        .shooting-star-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .shooting-star {
+            position: absolute;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%); /* Center the underline on mobile */
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, #fff, transparent);
+            opacity: 0;
+            animation: shooting-star 8s ease-in-out infinite;
         }
-        .social-links, .footer-column.about p {
-            justify-content: center;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .qr-code {
-            margin-left: auto;
-            margin-right: auto;
-        }
-    }
+        .shooting-star:nth-child(1) { top: 20%; left: 80%; animation-delay: 2s; }
+        .shooting-star:nth-child(2) { top: 60%; left: 90%; animation-delay: 5s; }
+        .shooting-star:nth-child(3) { top: 10%; left: 10%; animation-delay: 8s; }
 
-/* Add this CSS with your other navbar styles */
-.share-btn {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 50%; /* Make it a circle */
-    width: 44px; /* Match height of other elements */
-    height: 44px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s;
-    flex-shrink: 0;
-    color: var(--text-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
 
-.share-btn:hover { 
-    background: var(--accent-color-soft);
-    color: var(--bg-color);
-    transform: scale(1.1);
-}
+        /* Language Toggling Logic */
+        [lang="hi"] { display: none; }
+        body.lang-hi [lang="hi"] { display: inline; font-family: var(--font-hindi); }
+        body.lang-hi [lang="en"] { display: none; }
 
-/* For smaller screens, ensure it fits well */
-@media (max-width: 768px) {
-    .share-btn {
-        width: 40px;
-        height: 40px;
-    }
-}
-
-    /* 9. Animations & Mobile Optimizations */
-    .fade-in { 
-        opacity: 0; 
-        transform: translateY(20px); 
-        transition: opacity 0.6s ease-out, transform 0.6s ease-out; 
-    }
-    .fade-in.visible { 
-        opacity: 1; 
-        transform: translateY(0); 
-    }
-    
-.community-card {
-    background: linear-gradient(145deg, rgba(242, 134, 44, 0.15), rgba(13, 5, 33, 0.2));
-    border: 1px solid var(--accent-color-soft);
-    border-radius: 20px;
-    text-align: center;
-    padding: 40px 25px;
-    margin: 40px 0;
-}
-.community-card .fa-whatsapp {
-    font-size: 3rem;
-    color: #25D366;
-    margin-bottom: 15px;
-}
-.community-card h3 { font-family: var(--font-heading); font-size: 1.8rem; margin-bottom: 10px; }
-.community-card p { margin-bottom: 20px; }
-
-    /* --- Combined FAB & Scroll-to-Top --- */
-    .fab-container {
-        position: fixed;
-        bottom: 25px;
-        right: 25px; /* --- MOVED TO THE RIGHT --- */
-        z-index: 1000;
-        cursor: pointer;
-        opacity: 0; /* Starts completely hidden */
-        visibility: hidden;
-        transform: scale(0.8);
-        transition: opacity 0.4s ease, visibility 0.4s ease, transform 0.4s ease;
-    }
-    .fab-container.visible {
-        opacity: 1;
-        visibility: visible;
-        transform: scale(1);
-    }
-
-    .fab-main-button {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background-color: var(--accent-color);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--bg-color);
-        font-size: 1.8rem;
-        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), background-color 0.3s ease;
-        position: relative; /* Needed for positioning icons on top of each other */
-        overflow: hidden; /* Hide icons as they animate out */
-    }
-
-    /* Base state for all icons inside the main button */
-    .fab-main-button i {
-        position: absolute;
-        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease;
-    }
-
-    /* --- STATE 1: Default (Top of page) --- */
-    .icon-plus { transform: rotate(0deg) scale(1); }
-    .icon-arrow-up { transform: rotate(180deg) scale(0); opacity: 0; }
-    .icon-close { display: none; } /* Managed by JS/active class */
-
-    /* --- STATE 2: Scrolled Down (Arrow is visible) --- */
-    .fab-container.is-scrolled .icon-plus { transform: rotate(-180deg) scale(0); opacity: 0; }
-    .fab-container.is-scrolled .icon-arrow-up { transform: rotate(0deg) scale(1); opacity: 1; }
-
-    /* --- STATE 3: Attention Seeking (Arrow flips back to Plus) --- */
-    .fab-container.attention-seek .icon-plus { transform: rotate(0deg) scale(1); opacity: 1; }
-    .fab-container.attention-seek .icon-arrow-up { transform: rotate(180deg) scale(0); opacity: 0; }
-
-    /* --- STATE 4: Menu is Active/Open (Show Close 'X') --- */
-    .fab-container.active .fab-main-button { transform: rotate(360deg); }
-    .fab-container.active .icon-plus, .fab-container.active .icon-arrow-up { transform: scale(0); opacity: 0; }
-    .fab-container.active .icon-close { display: block; transform: scale(1); }
-
-    /* Wiggle Animation */
-    @keyframes wiggle {
-        0%, 100% { transform: rotate(0deg) scale(1.1); }
-        25% { transform: rotate(-10deg) scale(1.1); }
-        50% { transform: rotate(10deg) scale(1.1); }
-        75% { transform: rotate(-5deg) scale(1.1); }
-    }
-
-    .fab-container.is-wiggling .fab-main-button {
-        animation: wiggle 0.8s ease-in-out;
-    }
-
-    /* Social options styling remains mostly the same */
-    .fab-options { position: absolute; bottom: 75px; left: 5px; display: flex; flex-direction: column; gap: 15px; }
-    .fab-option { width: 50px; height: 50px; border-radius: 50%; background-color: #FFF; color: #333; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); opacity: 0; transform: translateY(20px) scale(0.5); transition: all 0.3s ease; pointer-events: none; }
-    .fab-container.active .fab-option { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
-    .fab-container.active .fab-option:nth-child(1) { transition-delay: 0.2s; }
-    .fab-container.active .fab-option:nth-child(2) { transition-delay: 0.1s; }
-    .fab-container.active .fab-option:nth-child(3) { transition-delay: 0s; }
-    .fab-whatsapp { background-color: #25D366; color: #FFF; }
-    .fab-instagram { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); color: #FFF; }
-    .fab-youtube { background-color: #FF0000; color: #FFF; }
-    .fab-option:hover { transform: scale(1.15) !important; }
-
-    /* --- Media Queries for Responsiveness --- */
-    
-    @media (min-width: 600px) {
-        .product-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
+        /* Hero Header Section */
+        .hero { text-align: center; padding: 60px 20px; }
+        .hero-logo {
+            width: 100px; height: 100px; border-radius: 50%;
+            border: 2px solid var(--accent-primary); margin-bottom: 20px;
+            box-shadow: 0 0 30px var(--accent-glow); animation: float 6s ease-in-out infinite;
         }
         .hero h1 {
-            font-size: 2.2rem;
+            font-family: var(--font-heading); font-size: 2.5rem; color: var(--text-primary);
+            letter-spacing: 3px; text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
-        .qr-container {
-            flex-direction: row;
-            gap: 30px;
-        }
-        .qr-text {
-            text-align: left;
-        }
-        .nav-title {
-            display: block; /* Show nav title on medium screens */
-        }
-    }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
 
-    @media (min-width: 900px) {
-        .product-grid {
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-        }
-        .hero h1 {
-            font-size: 2.5rem;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .lang-switcher span { font-size: 0; } 
-        /* Show 'Hi' to switch to Hindi when English is active */
-        .lang-switcher::before { 
-            content: 'Hi'; 
-            font-size: 1rem;
-            font-weight: 600;
-        }
-        /* Show 'En' to switch to English when Hindi is active */
-        body.lang-hi .lang-switcher::before { content: 'En'; }
-
-        .search-box {
-            margin: 0; /* Remove extra margin on mobile */
-        }
+        /* Sticky Nav */
         .sticky-nav-wrapper {
-            top: 10px;
-            padding: 0 10px;
+            position: sticky; top: 20px; z-index: 1000; padding: 0 20px;
+            display: flex; justify-content: center;
         }
         .sticky-nav {
-            padding: 8px 15px;
+            width: 100%; max-width: 1200px; padding: 12px 24px;
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow); border-radius: 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 20px; transition: all 0.3s ease;
         }
-    }
-</style>
+        .sticky-nav:hover {
+            background: rgba(255, 255, 255, 0.05); border-color: var(--glass-highlight);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
+        }
+        .nav-logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .nav-logo {
+            width: 45px; height: 45px; border-radius: 50%;
+            border: 2px solid var(--accent-primary); box-shadow: 0 0 15px var(--accent-glow);
+            transition: transform 0.3s ease;
+        }
+        .nav-logo:hover { transform: rotate(360deg); }
+        .nav-title {
+            font-family: var(--font-heading); font-size: 1.4rem; color: var(--text-primary);
+            font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+            background: linear-gradient(to right, #fff, #ccc); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; display: none;
+        }
+        .search-box { flex-grow: 1; max-width: 500px; position: relative; }
+        #search-input {
+            width: 100%; padding: 12px 24px; font-size: 1rem; color: var(--text-primary);
+            background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border);
+            border-radius: 50px; transition: all 0.3s ease;
+        }
+        #search-input::placeholder { color: var(--text-secondary); }
+        #search-input:focus {
+            outline: none; background: rgba(0, 0, 0, 0.4); border-color: var(--accent-primary);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .lang-switcher, .share-btn {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border);
+            color: var(--text-primary); cursor: pointer; transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        .lang-switcher { border-radius: 50px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; letter-spacing: 1px; }
+        .share-btn { border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .lang-switcher:hover, .share-btn:hover {
+            background: var(--accent-primary); border-color: var(--accent-primary);
+            box-shadow: 0 0 20px var(--accent-glow); transform: translateY(-2px); color: #fff;
+        }
+
+        /* Product Grid */
+        .product-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 40px; padding: 60px 0;
+        }
+        #no-results {
+            grid-column: 1 / -1; text-align: center; padding: 60px; font-size: 1.5rem;
+            color: var(--text-secondary); background: var(--glass-bg);
+            border-radius: 20px; border: 1px solid var(--glass-border);
+        }
+
+        /* Product Card */
+        .product-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 25px; position: relative; overflow: hidden;
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); display: flex;
+            flex-direction: column; transform-style: preserve-3d; perspective: 1000px;
+        }
+        .product-card::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s; pointer-events: none;
+        }
+        .product-card:hover::before { left: 100%; transition: 0.7s; }
+        .product-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px var(--accent-glow);
+            border-color: var(--glass-highlight);
+        }
+        .product-image-container {
+            width: 100%; aspect-ratio: 16 / 9; margin-bottom: 25px; border-radius: 16px;
+            overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); position: relative;
+        }
+        .product-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
+        .product-card:hover img { transform: scale(1.1); }
+        .product-card h2 {
+            font-family: var(--font-heading); font-size: 1.6rem; color: var(--text-primary);
+            margin-bottom: 15px; line-height: 1.3; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .product-card p {
+            font-size: 1rem; color: var(--text-secondary); flex-grow: 1;
+            margin-bottom: 30px; line-height: 1.8;
+        }
+        .cta-button {
+            display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+            padding: 14px 32px; background: var(--accent-gradient); color: #fff;
+            border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1rem;
+            letter-spacing: 0.5px; transition: all 0.3s ease; align-self: center;
+            box-shadow: 0 4px 15px var(--accent-glow); border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative; overflow: hidden; z-index: 1;
+        }
+        .cta-button::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(255, 255, 255, 0.2), transparent);
+            opacity: 0; transition: opacity 0.3s; z-index: -1;
+        }
+        .cta-button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px var(--accent-glow); }
+        .cta-button:hover::after { opacity: 1; }
+        .cta-button.pdf {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+        }
+        .cta-button.pdf:hover { box-shadow: 0 8px 25px rgba(231, 76, 60, 0.6); }
+
+        /* Footer */
+        .page-footer {
+            padding: 80px 20px 20px; margin-top: 80px; background-color: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid var(--glass-border); backdrop-filter: blur(10px);
+        }
+        .footer-container {
+            display: flex; flex-wrap: wrap; justify-content: space-between;
+            align-items: flex-start; gap: 40px; margin-bottom: 60px;
+        }
+        .footer-column { flex: 1; min-width: 250px; text-align: left; }
+        .footer-column h3 {
+            font-family: var(--font-heading); font-size: 1.1rem; color: var(--text-primary);
+            margin-bottom: 30px; position: relative; text-transform: uppercase;
+            letter-spacing: 1.5px; font-weight: 700;
+        }
+        .footer-column h3::after {
+            content: ''; position: absolute; bottom: -12px; left: 0; width: 50px; height: 2px;
+            background-color: var(--accent-primary);
+        }
+        .footer-logo {
+            width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--accent-primary);
+            margin-bottom: 20px;
+        }
+        .footer-column.about p {
+            font-size: 0.95rem; color: var(--text-secondary); max-width: 320px; line-height: 1.8;
+        }
+        .footer-column.links ul { list-style: none; padding: 0; margin: 0; }
+        .footer-column.links li { margin-bottom: 20px; }
+        .footer-column.links a {
+            color: var(--text-secondary); text-decoration: none; transition: color 0.3s, padding-left 0.3s;
+            display: inline-flex; align-items: center; gap: 12px;
+        }
+        .footer-column.links li:not(.cta-item) a:hover { color: var(--accent-primary); padding-left: 5px; }
+        .footer-column.links i { font-size: 1.2rem; color: var(--accent-primary); }
+        .footer-column.links .cta-item a {
+            background-color: rgba(255, 255, 255, 0.1); color: var(--text-primary);
+            padding: 12px 24px; border-radius: 50px; font-weight: 600;
+            border: 1px solid var(--glass-border); transition: all 0.3s ease;
+        }
+        .footer-column.links .cta-item a:hover {
+            background-color: var(--accent-primary); color: #fff;
+            transform: translateY(-3px); box-shadow: 0 8px 20px var(--accent-glow);
+        }
+        .social-links { display: flex; justify-content: flex-start; gap: 15px; margin-bottom: 30px; }
+        .social-links a { color: var(--text-primary); text-decoration: none; }
+        .social-links i {
+            font-size: 1.3rem; width: 42px; height: 42px; display: flex; align-items: center;
+            justify-content: center; border-radius: 12px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border); transition: all 0.3s ease;
+        }
+        .social-links a:hover i {
+            background-color: var(--accent-primary); border-color: var(--accent-primary);
+            color: #fff; transform: translateY(-3px);
+        }
+        .footer-bottom {
+            text-align: center; padding-top: 20px; border-top: 1px solid var(--glass-border);
+            font-size: 0.9rem; color: var(--text-secondary);
+        }
+
+        /* Community Card */
+        .community-card {
+            background: linear-gradient(145deg, rgba(242, 134, 44, 0.15), rgba(13, 5, 33, 0.4));
+            border: 1px solid var(--glass-border); border-radius: 24px; text-align: center;
+            padding: 50px 30px; margin: 60px 0; backdrop-filter: blur(10px);
+            box-shadow: var(--glass-shadow);
+        }
+        .community-card .fa-whatsapp {
+            font-size: 3.5rem; color: #25D366; margin-bottom: 20px;
+            filter: drop-shadow(0 0 10px rgba(37, 211, 102, 0.4));
+        }
+        .community-card h3 {
+            font-family: var(--font-heading); font-size: 2rem; margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+        .community-card p { margin-bottom: 30px; color: var(--text-secondary); font-size: 1.1rem; }
+
+        /* FAB */
+        .fab-container {
+            position: fixed; bottom: 30px; right: 30px; z-index: 1000; cursor: pointer;
+            opacity: 0; visibility: hidden; transform: scale(0.8);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .fab-container.visible { opacity: 1; visibility: visible; transform: scale(1); }
+        .fab-main-button {
+            width: 65px; height: 65px; border-radius: 50%; background: var(--accent-gradient);
+            box-shadow: 0 10px 25px var(--accent-glow); display: flex; align-items: center;
+            justify-content: center; color: #fff; font-size: 1.8rem;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            position: relative; overflow: hidden; border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .fab-main-button i {
+            position: absolute; transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease;
+        }
+        .icon-plus { transform: rotate(0deg) scale(1); }
+        .icon-arrow-up { transform: rotate(180deg) scale(0); opacity: 0; }
+        .icon-close { display: none; }
+        .fab-container.is-scrolled .icon-plus { transform: rotate(-180deg) scale(0); opacity: 0; }
+        .fab-container.is-scrolled .icon-arrow-up { transform: rotate(0deg) scale(1); opacity: 1; }
+        .fab-container.attention-seek .icon-plus { transform: rotate(0deg) scale(1); opacity: 1; }
+        .fab-container.attention-seek .icon-arrow-up { transform: rotate(180deg) scale(0); opacity: 0; }
+        .fab-container.active .fab-main-button { transform: rotate(360deg); }
+        .fab-container.active .icon-plus, .fab-container.active .icon-arrow-up { transform: scale(0); opacity: 0; }
+        .fab-container.active .icon-close { display: block; transform: scale(1); }
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg) scale(1.1); }
+            25% { transform: rotate(-10deg) scale(1.1); }
+            50% { transform: rotate(10deg) scale(1.1); }
+            75% { transform: rotate(-5deg) scale(1.1); }
+        }
+        .fab-container.is-wiggling .fab-main-button { animation: wiggle 0.8s ease-in-out; }
+        .fab-options {
+            position: absolute; bottom: 80px; left: 7px; display: flex; flex-direction: column; gap: 15px;
+        }
+        .fab-option {
+            width: 50px; height: 50px; border-radius: 50%; background-color: #FFF; color: #333;
+            display: flex; align-items: center; justify-content: center; text-decoration: none;
+            font-size: 1.5rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); opacity: 0;
+            transform: translateY(20px) scale(0.5); transition: all 0.3s ease; pointer-events: none;
+        }
+        .fab-container.active .fab-option { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+        .fab-container.active .fab-option:nth-child(1) { transition-delay: 0.2s; }
+        .fab-container.active .fab-option:nth-child(2) { transition-delay: 0.1s; }
+        .fab-container.active .fab-option:nth-child(3) { transition-delay: 0s; }
+        .fab-whatsapp { background-color: #25D366; color: #FFF; }
+        .fab-instagram {
+            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+            color: #FFF;
+        }
+        .fab-youtube { background-color: #FF0000; color: #FFF; }
+        .fab-option:hover { transform: scale(1.15) !important; }
+
+        @media (min-width: 600px) {
+            .product-grid { grid-template-columns: repeat(2, 1fr); gap: 30px; }
+            .hero h1 { font-size: 3rem; }
+            .nav-title { display: block; }
+        }
+        @media (min-width: 900px) {
+            .product-grid { grid-template-columns: repeat(3, 1fr); gap: 40px; }
+        }
+        @media (max-width: 768px) {
+            .lang-switcher span { font-size: 0; }
+            .lang-switcher::before { content: 'Hi'; font-size: 1rem; font-weight: 600; }
+            body.lang-hi .lang-switcher::before { content: 'En'; }
+            .search-box { margin: 0; }
+            .sticky-nav-wrapper { top: 10px; padding: 0 10px; }
+            .sticky-nav { padding: 8px 15px; }
+            .footer-container { text-align: center; }
+            .footer-column { text-align: center; min-width: 100%; }
+            .footer-column h3::after { left: 50%; transform: translateX(-50%); }
+            .social-links, .footer-column.about p { justify-content: center; margin-left: auto; margin-right: auto; }
+        }
+    </style>
 </head>
+</style></head>
 <body>
+    <!-- Dynamic Background Layers -->
+    <div class="nebula-layer"></div>
+    <div class="star-layer stars-small"></div>
+    <div class="star-layer stars-medium"></div>
+    <div class="star-layer stars-large"></div>
+    <div class="shooting-star-container">
+        <div class="shooting-star"></div>
+        <div class="shooting-star"></div>
+        <div class="shooting-star"></div>
+    </div>
 
     <!-- Header -->
     <header class="hero">
-        <img src="https://astroji.thefuture.university/assets/assets/images/logo.f4052b287762d9b75dd6b6d53e471448.png" alt="Astroji Logo" class="hero-logo fade-in">
+        <img src="https://astroji.thefuture.university/assets/assets/images/logo.f4052b287762d9b75dd6b6d53e471448.png"
+            alt="Astroji Logo" class="hero-logo fade-in">
         <h1 class="fade-in">
             <span lang="en">Astroji Product Usage Guide</span>
             <span lang="hi">एस्ट्रोजी उत्पाद उपयोग मार्गदर्शिका</span>
         </h1>
     </header>
 
-    <!-- REVAMPED Sticky Nav Bar Wrapper -->
+    <!-- Sticky Nav -->
     <div class="sticky-nav-wrapper">
         <nav class="sticky-nav">
             <a href="#" class="nav-logo-container">
-                <img src="https://astroji.thefuture.university/assets/assets/images/logo.f4052b287762d9b75dd6b6d53e471448.png" alt="Astroji Logo" class="nav-logo">
+                <img src="https://astroji.thefuture.university/assets/assets/images/logo.f4052b287762d9b75dd6b6d53e471448.png"
+                    alt="Astroji Logo" class="nav-logo">
                 <span class="nav-title">Astroji</span>
             </a>
             <div class="search-box">
-                <input type="search" id="search-input" 
-                    placeholder="Search products... (e.g., 'protection', 'शांति')">
+                <input type="search" id="search-input" placeholder="Search products... (e.g., 'protection', 'शांति')">
             </div>
             <button class="lang-switcher" id="lang-toggle-btn" title="Change Language">
                 <span lang="en">हिन्दी</span>
@@ -707,396 +575,364 @@
     <div class="container">
         <!-- Main Product Grid -->
         <main class="product-grid" id="product-grid">
-            <!-- All your product <article> cards go here exactly as they were before -->
-            <!-- No Results Message -->
             <div id="no-results">
                 <span lang="en">No products found matching your search.</span>
                 <span lang="hi">आपकी खोज से मेल खाने वाला कोई उत्पाद नहीं मिला।</span>
             </div>
 
-            <!-- 12 Jyotirlinga Chowki Card -->
-            <article class="product-card fade-in" data-tags="shiva, mahadev, jyotirlinga, 12, blessings, divine, spiritual, devotion, puja, chowki, temple, peace, energy, शिव, महादेव, ज्योतिर्लिंग, १२, आशीर्वाद, दिव्य, आध्यात्मिक, भक्ति, पूजा, चौकी, मंदिर, शांति, ऊर्जा">
+            <!-- 12 Jyotirlinga Chowki -->
+            <article class="product-card fade-in"
+                data-tags="shiva, mahadev, jyotirlinga, 12, blessings, divine, spiritual, devotion, puja, chowki, temple, peace, energy, शिव, महादेव, ज्योतिर्लिंग, १२, आशीर्वाद, दिव्य, आध्यात्मिक, भक्ति, पूजा, चौकी, मंदिर, शांति, ऊर्जा">
                 <div class="product-image-container">
-                    <img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760023060107%2F12-jyotirlinga-chowki-d98c6c-ChatGPT%2520Image%2520Oct%25209%252C%25202025%252C%252006_37_02%2520PM.webp&w=1920&q=75" alt="12 Jyotirlinga Chowki">
+                    <img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760023060107%2F12-jyotirlinga-chowki-d98c6c-ChatGPT%2520Image%2520Oct%25209%252C%25202025%252C%252006_37_02%2520PM.webp&w=1920&q=75"
+                        alt="12 Jyotirlinga Chowki">
                 </div>
                 <h2><span lang="en">12 Jyotirlinga Chowki</span><span lang="hi">१२ ज्योतिर्लिंग चौकी</span></h2>
-                <p><span lang="en">Brings the divine presence and blessings of all 12 sacred Jyotirlingas into your home. A powerful medium for devotion and spiritual peace.</span><span lang="hi">आपके घर में सभी 12 पवित्र ज्योतिर्लिंगों की दिव्य उपस्थिति और आशीर्वाद लाता है। भक्ति और आध्यात्मिक शांति के लिए एक शक्तिशाली माध्यम।</span></p>
-                <a href="https://www.canva.com/design/DAGzmCasR30/SoQqfsQa0L8-Brcud7lyVg/view?utm_content=DAGzmCasR30&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hcae1e9e607" target="_blank" class="cta-button pdf"><i class="fa-solid fa-file-pdf"></i> <span lang="en">Open Here</span><span lang="hi">यहाँ खोलें</span></a>
+                <p><span lang="en">Brings the divine presence and blessings of all 12 sacred Jyotirlingas into your
+                        home. A powerful medium for devotion and spiritual peace.</span><span lang="hi">आपके घर में सभी
+                        12 पवित्र ज्योतिर्लिंगों की दिव्य उपस्थिति और आशीर्वाद लाता है। भक्ति और आध्यात्मिक शांति के लिए
+                        एक शक्तिशाली माध्यम।</span></p>
+                <a href="https://www.canva.com/design/DAGzmCasR30/SoQqfsQa0L8-Brcud7lyVg/view?utm_content=DAGzmCasR30&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hcae1e9e607"
+                    target="_blank" class="cta-button pdf"><i class="fa-solid fa-file-pdf"></i> <span lang="en">Open
+                        Here</span><span lang="hi">यहाँ खोलें</span></a>
             </article>
 
-            <!-- Bagla Mukhi Card -->
-            <article class="product-card fade-in" data-tags="victory, protection, strength, obstacles, बगलामुखी, विजय, सुरक्षा, शक्ति, बाधाओं">
-                <div class="product-image-container"><img src="https://tfu-media.s3.ap-south-1.amazonaws.com/products/1759930148093/bagla-mukhi-kavach-73c597-Gemini_Generated_Image_stx2hnstx2hnstx2.webp" alt="Bagla Mukhi Kit"></div>
+            <!-- Bagla Mukhi -->
+            <article class="product-card fade-in"
+                data-tags="victory, protection, strength, obstacles, बगलामुखी, विजय, सुरक्षा, शक्ति, बाधाओं">
+                <div class="product-image-container"><img
+                        src="https://tfu-media.s3.ap-south-1.amazonaws.com/products/1759930148093/bagla-mukhi-kavach-73c597-Gemini_Generated_Image_stx2hnstx2hnstx2.webp"
+                        alt="Bagla Mukhi Kit"></div>
                 <h2><span lang="en">Bagla Mukhi</span><span lang="hi">बगलामुखी</span></h2>
-                <p><span lang="en">Brings victory, protection, and strength against obstacles.</span><span lang="hi">बाधाओं के खिलाफ विजय, सुरक्षा और शक्ति लाता है।</span></p>
-                <a href="https://youtu.be/tdAj4u2lKcE" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
+                <p><span lang="en">Brings victory, protection, and strength against obstacles.</span><span
+                        lang="hi">बाधाओं के खिलाफ विजय, सुरक्षा और शक्ति लाता है।</span></p>
+                <a href="https://youtu.be/tdAj4u2lKcE" target="_blank" class="cta-button"><i
+                        class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो
+                        देखें</span></a>
             </article>
 
-            <!-- Vastu Kit Card -->
-            <article class="product-card fade-in" data-tags="vastu, harmony, prosperity, home, energies, वास्तु, सद्भाव, समृद्धि, घर, ऊर्जा">
-                <div class="product-image-container"><img src="https://tfu-media.s3.ap-south-1.amazonaws.com/products/1760093785582/ultimate-vastu-kit-72f921-636d303f-6f31-48aa-b786-52bfb9a0423d.webp" alt="Vastu Kit"></div>
+            <!-- Vastu Kit -->
+            <article class="product-card fade-in"
+                data-tags="vastu, harmony, prosperity, home, energies, वास्तु, सद्भाव, समृद्धि, घर, ऊर्जा">
+                <div class="product-image-container"><img
+                        src="https://tfu-media.s3.ap-south-1.amazonaws.com/products/1760093785582/ultimate-vastu-kit-72f921-636d303f-6f31-48aa-b786-52bfb9a0423d.webp"
+                        alt="Vastu Kit"></div>
                 <h2><span lang="en">Vastu Kit</span><span lang="hi">वास्तु किट</span></h2>
-                <p><span lang="en">Balances energies to create harmony & prosperity in your home.</span><span lang="hi">आपके घर में सद्भाव और समृद्धि बनाने के लिए ऊर्जा को संतुलित करता है।</span></p>
-                <a href="https://youtu.be/tddGrFeHUJs" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
+                <p><span lang="en">Balances energies to create harmony & prosperity in your home.</span><span
+                        lang="hi">आपके घर में सद्भाव और समृद्धि बनाने के लिए ऊर्जा को संतुलित करता है।</span></p>
+                <a href="https://youtu.be/tddGrFeHUJs" target="_blank" class="cta-button"><i
+                        class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो
+                        देखें</span></a>
             </article>
-            
-            <!-- Ganesh Shakti Kit Card -->
-            <article class="product-card fade-in" data-tags="ganesha, wisdom, success, blessings, गणेश, बुद्धि, सफलता, आशीर्वाद">
-                <div class="product-image-container"><img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760863866237%2Fganesh-shakti-kit-032002-Gemini_Generated_Image_p8uso9p8uso9p8us.png&w=1920&q=75" alt="Ganesh Shakti Kit"></div>
+
+            <!-- Ganesh Shakti Kit -->
+            <article class="product-card fade-in"
+                data-tags="ganesha, wisdom, success, blessings, गणेश, बुद्धि, सफलता, आशीर्वाद">
+                <div class="product-image-container"><img
+                        src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760863866237%2Fganesh-shakti-kit-032002-Gemini_Generated_Image_p8uso9p8uso9p8us.png&w=1920&q=75"
+                        alt="Ganesh Shakti Kit"></div>
                 <h2><span lang="en">Ganesh Shakti Kit</span><span lang="hi">गणेश शक्ति किट</span></h2>
-                <p><span lang="en">Invokes Lord Ganesha's blessings for wisdom and success.</span><span lang="hi">ज्ञान और सफलता के लिए भगवान गणेश का आशीर्वाद प्राप्त करता है।</span></p>
-                <a href="https://youtu.be/DM7B0KaV_1I?si=yfnUrDmNL7yd17oA" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
+                <p><span lang="en">Invokes Lord Ganesha's blessings for wisdom and success.</span><span lang="hi">ज्ञान
+                        और सफलता के लिए भगवान गणेश का आशीर्वाद प्राप्त करता है।</span></p>
+                <a href="https://youtu.be/DM7B0KaV_1I?si=yfnUrDmNL7yd17oA" target="_blank" class="cta-button"><i
+                        class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो
+                        देखें</span></a>
             </article>
 
-            <!-- Mangal Shanti Kit Card -->
-            <article class="product-card fade-in" data-tags="mangal dosha, peace, shanti, effects, मंगल दोष, शांति, प्रभाव">
-                <div class="product-image-container"><img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760863979848%2Faghori-mangal-shanti-kit-7fd26e-Gemini_Generated_Image_j2o72mj2o72mj2o7.png&w=1920&q=75" alt="Mangal Shanti Kit"></div>
+            <!-- Mangal Shanti Kit -->
+            <article class="product-card fade-in"
+                data-tags="mangal dosha, peace, shanti, effects, मंगल दोष, शांति, प्रभाव">
+                <div class="product-image-container"><img
+                        src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760863979848%2Faghori-mangal-shanti-kit-7fd26e-Gemini_Generated_Image_j2o72mj2o72mj2o7.png&w=1920&q=75"
+                        alt="Mangal Shanti Kit"></div>
                 <h2><span lang="en">Mangal Shanti Kit</span><span lang="hi">मंगल शांति किट</span></h2>
-                <p><span lang="en">Reduces the effects of Mangal dosha and enhances peace.</span><span lang="hi">मंगल दोष के प्रभाव को कम करता है और शांति बढ़ाता है।</span></p>
-                <a href="https://youtube.com/shorts/ga0S7W-1i3w" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
+                <p><span lang="en">Reduces the effects of Mangal dosha and enhances peace.</span><span lang="hi">मंगल
+                        दोष के प्रभाव को कम करता है और शांति बढ़ाता है।</span></p>
+                <a href="https://youtube.com/shorts/ga0S7W-1i3w" target="_blank" class="cta-button"><i
+                        class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो
+                        देखें</span></a>
             </article>
-            
-            <!-- Vyapar Vruddhi Kit Card -->
-            <article class="product-card fade-in" data-tags="business, wealth, growth, money, success, vyapar, vruddhi, व्यापार, वृद्धि, धन, सफलता">
-                <div class="product-image-container"><img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760864026762%2Fvyapar-vruddhi-kit-ff1705-Gemini_Generated_Image_5gl5tj5gl5tj5gl5.png&w=1920&q=75" alt="Vyapar Vruddhi Kit"></div>
+
+            <!-- Vyapar Vruddhi Kit -->
+            <article class="product-card fade-in"
+                data-tags="business, wealth, growth, money, success, vyapar, vruddhi, व्यापार, वृद्धि, धन, सफलता">
+                <div class="product-image-container"><img
+                        src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760864026762%2Fvyapar-vruddhi-kit-ff1705-Gemini_Generated_Image_5gl5tj5gl5tj5gl5.png&w=1920&q=75"
+                        alt="Vyapar Vruddhi Kit"></div>
                 <h2><span lang="en">Vyapar Vruddhi Kit</span><span lang="hi">व्यापार वृद्धि किट</span></h2>
-                <p><span lang="en">Attracts wealth, growth, and success in business ventures.</span><span lang="hi">व्यापारिक उपक्रमों में धन, वृद्धि और सफलता को आकर्षित करता है।</span></p>
-                <a href="https://youtu.be/0MQesD5pcQk" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
+                <p><span lang="en">Attracts wealth, growth, and success in business ventures.</span><span
+                        lang="hi">व्यापारिक उपक्रमों में धन, वृद्धि और सफलता को आकर्षित करता है।</span></p>
+                <a href="https://youtu.be/0MQesD5pcQk" target="_blank" class="cta-button"><i
+                        class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो
+                        देखें</span></a>
             </article>
 
-            <!-- Aghori Evil Eye Locket Card -->
-            <article class="product-card fade-in" data-tags="evil eye, negativity, protection, shields, aghori, बुरी नजर, नकारात्मकता, सुरक्षा, कवच">
-                <div class="product-image-container"><img src="https://tfu-media.s3.ap-south-1.amazonaws.com/products/1759680797340/aghori-evil-eye-locket-edb358-Gemini_Generated_Image_5j3vl25j3vl25j3v.webp" alt="Aghori Evil Eye Locket"></div>
+            <!-- Aghori Evil Eye Locket -->
+            <article class="product-card fade-in"
+                data-tags="evil eye, negativity, protection, shields, aghori, बुरी नजर, नकारात्मकता, सुरक्षा, कवच">
+                <div class="product-image-container"><img
+                        src="https://tfu-media.s3.ap-south-1.amazonaws.com/products/1759680797340/aghori-evil-eye-locket-edb358-Gemini_Generated_Image_5j3vl25j3vl25j3v.webp"
+                        alt="Aghori Evil Eye Locket"></div>
                 <h2><span lang="en">Aghori Evil Eye Locket</span><span lang="hi">अघोरी बुरी नजर लॉकेट</span></h2>
-                <p><span lang="en">Shields you from negativity and evil influences.</span><span lang="hi">आपको नकारात्मकता और बुरी शक्तियों से बचाता है।</span></p>
-                <a href="https://youtu.be/vNgW9dsJW2I" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
+                <p><span lang="en">Shields you from negativity and evil influences.</span><span lang="hi">आपको
+                        नकारात्मकता और बुरी शक्तियों से बचाता है।</span></p>
+                <a href="https://youtu.be/vNgW9dsJW2I" target="_blank" class="cta-button"><i
+                        class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो
+                        देखें</span></a>
             </article>
-            
-            <!-- Rudraksha Set Card -->
-            <article class="product-card fade-in" data-tags="rudraksha, sacred energy, mind, body, soul, रुद्राक्ष, पवित्र ऊर्जा, मन, शरीर, आत्मा">
-                <div class="product-image-container"><img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760096235095%2Frudraksha-set-952e16-Gemini_Generated_Image_xxzji7xxzji7xxzj%2520%25281%2529.webp&w=1920&q=75" alt="Rudraksha Set"></div>
+
+            <!-- Rudraksha Set -->
+            <article class="product-card fade-in"
+                data-tags="rudraksha, sacred energy, mind, body, soul, रुद्राक्ष, पवित्र ऊर्जा, मन, शरीर, आत्मा">
+                <div class="product-image-container"><img
+                        src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760096235095%2Frudraksha-set-952e16-Gemini_Generated_Image_xxzji7xxzji7xxzj%2520%25281%2529.webp&w=1920&q=75"
+                        alt="Rudraksha Set"></div>
                 <h2><span lang="en">Rudraksha Set</span><span lang="hi">रुद्राक्ष सेट</span></h2>
-                <p><span lang="en">Empowers your mind, body, and soul with sacred energy.</span><span lang="hi">आपके मन, शरीर और आत्मा को पवित्र ऊर्जा से सशक्त बनाता है।</span></p>
-                <a href="https://www.canva.com/design/DAGrFe5jOTY/4RfpS877zJtx67V_88W-qA/view?utlId=hc4f44a65ff" class="cta-button pdf"><i class="fa-solid fa-file-pdf"></i> <span lang="en">Open Here</span><span lang="hi">यहाँ खोलें</span></a>
+                <p><span lang="en">Empowers your mind, body, and soul with sacred energy.</span><span lang="hi">आपके मन,
+                        शरीर और आत्मा को पवित्र ऊर्जा से सशक्त बनाता है।</span></p>
+                <a href="https://www.canva.com/design/DAGrFe5jOTY/4RfpS877zJtx67V_88W-qA/view?utlId=hc4f44a65ff"
+                    class="cta-button pdf"><i class="fa-solid fa-file-pdf"></i> <span lang="en">Open Here</span><span
+                        lang="hi">यहाँ खोलें</span></a>
             </article>
 
-            <!-- Kuber Yakshani Potli Card -->
-            <article class="product-card fade-in" data-tags="kuber, fortune, success, endeavor, potli, money, कुबेर, भाग्य, सफलता, पोटली">
-                <div class="product-image-container"><img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1759681522495%2Fkuber-yakshani-potli-bf4d9b-WhatsApp%2520Image%25202025-10-05%2520at%252021.05.03%2520%25281%2529.jpg&w=1920&q=75" alt="Kuber Yakshani Potli"></div>
+            <!-- Kuber Yakshani Potli -->
+            <article class="product-card fade-in"
+                data-tags="kuber, fortune, success, endeavor, potli, money, कुबेर, भाग्य, सफलता, पोटली">
+                <div class="product-image-container"><img
+                        src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1759681522495%2Fkuber-yakshani-potli-bf4d9b-WhatsApp%2520Image%25202025-10-05%2520at%252021.05.03%2520%25281%2529.jpg&w=1920&q=75"
+                        alt="Kuber Yakshani Potli"></div>
                 <h2><span lang="en">Kuber Yakshani Potli</span><span lang="hi">कुबेर यक्षिणी पोटली</span></h2>
-                <p><span lang="en">Opens pathways to fortune and success in every endeavor.</span><span lang="hi">हर प्रयास में भाग्य और सफलता के मार्ग खोलता है।</span></p>
-                <a href="https://youtu.be/PcJtspaEkyM" target="_blank" class="cta-button"><i class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो देखें</span></a>
+                <p><span lang="en">Opens pathways to fortune and success in every endeavor.</span><span lang="hi">हर
+                        प्रयास में भाग्य और सफलता के मार्ग खोलता है।</span></p>
+                <a href="https://youtu.be/PcJtspaEkyM" target="_blank" class="cta-button"><i
+                        class="fa-brands fa-youtube"></i> <span lang="en">Watch Video</span><span lang="hi">वीडियो
+                        देखें</span></a>
             </article>
 
-            <!-- GajLaxmi Sadhna Kit Card -->
-            <article class="product-card fade-in" data-tags="ganesha, lakshmi, gajlaxmi, wealth, prosperity, success, fortune, sadhna, diwali, blessings, finance, गणेश, लक्ष्मी, गजलक्ष्मी, धन, समृद्धि, सफलता, सौभाग्य, साधना, दिवाली, आशीर्वाद, वित्त">
-                <div class="product-image-container">
-                    <img src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760255007948%2Fgajlaxmi-sadhna-kit-cb1fce-ganesh_lakshami_moorti_kit_hero_pic.webp&w=1920&q=75" alt="GajLaxmi Sadhna Kit">
-                </div>
+            <!-- GajLaxmi Sadhna Kit -->
+            <article class="product-card fade-in"
+                data-tags="ganesha, lakshmi, gajlaxmi, wealth, prosperity, success, fortune, sadhna, diwali, blessings, finance, गणेश, लक्ष्मी, गजलक्ष्मी, धन, समृद्धि, सफलता, सौभाग्य, साधना, दिवाली, आशीर्वाद, वित्त">
+                <div class="product-image-container"><img
+                        src="https://admin.thefuture.university/_next/image?url=https%3A%2F%2Ftfu-media.s3.ap-south-1.amazonaws.com%2Fproducts%2F1760255007948%2Fgajlaxmi-sadhna-kit-cb1fce-ganesh_lakshami_moorti_kit_hero_pic.webp&w=1920&q=75"
+                        alt="GajLaxmi Sadhna Kit"></div>
                 <h2><span lang="en">GajLaxmi Sadhna Kit</span><span lang="hi">गजलक्ष्मी साधना किट</span></h2>
-                <p><span lang="en">Invokes the combined blessings of Lord Ganesha and Goddess Lakshmi for immense wealth, success, and removal of obstacles.</span><span lang="hi">अपार धन, सफलता और बाधाओं को दूर करने के लिए भगवान गणेश और देवी लक्ष्मी का संयुक्त आशीर्वाद प्राप्त करें।</span></p>
-                <a href="https://www.canva.com/design/DAG1lIc-2TM/RRx-I2EmC4a0mmQApRzhhQ/view?utm_content=DAG1lIc-2TM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h4e483b71a1" class="cta-button pdf"><i class="fa-solid fa-file-pdf"></i> <span lang="en">Open Here</span><span lang="hi">यहाँ खोलें</span></a>
+                <p><span lang="en">Invokes the combined blessings of Lord Ganesha and Goddess Lakshmi for immense
+                        wealth, success, and removal of obstacles.</span><span lang="hi">अपार धन, सफलता और बाधाओं को दूर
+                        करने के लिए भगवान गणेश और देवी लक्ष्मी का संयुक्त आशीर्वाद प्राप्त करें।</span></p>
+                <a href="https://www.canva.com/design/DAG1lIc-2TM/RRx-I2EmC4a0mmQApRzhhQ/view?utm_content=DAG1lIc-2TM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h4e483b71a1"
+                    class="cta-button pdf"><i class="fa-solid fa-file-pdf"></i> <span lang="en">Open Here</span><span
+                        lang="hi">यहाँ खोलें</span></a>
             </article>
 
-            <!-- Narsimha Kavach Card -->
-            <article class="product-card fade-in" data-tags="narsimha, kavach, protection, courage, strength, bhakti, devotion, narasimha, kavacham, narasimha mantra, शक्ति, साहस, सुरक्षा, भक्त‍ि, नरसिंह कवच, उपासना, ऊर्जा, रक्षा कवच">
-                <div class="product-image-container">
-                    <img src="https://getexpontential.com/files/1761380031352-Gemini_Generated_Image_he9106he9106he91.png" alt="Procedure to Wear Narsimha Kavach">
-                </div>
+            <!-- Narsimha Kavach -->
+            <article class="product-card fade-in"
+                data-tags="narsimha, kavach, protection, courage, strength, bhakti, devotion, narasimha, kavacham, narasimha mantra, शक्ति, साहस, सुरक्षा, भक्त‍ि, नरसिंह कवच, उपासना, ऊर्जा, रक्षा कवच">
+                <div class="product-image-container"><img
+                        src="https://getexpontential.com/files/1761380031352-Gemini_Generated_Image_he9106he9106he91.png"
+                        alt="Procedure to Wear Narsimha Kavach"></div>
                 <h2><span lang="en">Narsimha Kavach</span><span lang="hi">नरसिंह कवच पहनने की विधि</span></h2>
-                <p>
-                    <span lang="en">Detailed guide to correctly wear the sacred Narsimha Kavach for divine protection, courage, and spiritual power. Includes proper day, direction, mantra, and rules for maintaining purity.</span>
-                    <span lang="hi">दिव्य सुरक्षा, साहस और आध्यात्मिक शक्ति प्राप्त करने के लिए नरसिंह कवच धारण करने की विधि। इसमें दिन, दिशा, मंत्र और पवित्रता बनाए रखने के नियम शामिल हैं।</span>
+                <p><span lang="en">Detailed guide to correctly wear the sacred Narsimha Kavach for divine protection,
+                        courage, and spiritual power. Includes proper day, direction, mantra, and rules for maintaining
+                        purity.</span><span lang="hi">दिव्य सुरक्षा, साहस और आध्यात्मिक शक्ति प्राप्त करने के लिए नरसिंह
+                        कवच धारण करने की विधि। इसमें दिन, दिशा, मंत्र और पवित्रता बनाए रखने के नियम शामिल हैं।</span>
                 </p>
-                <a href="https://www.canva.com/design/DAG2yG1WcOY/K10f8mssy7NW04YYj0qGIQ/view?utm_content=DAG2yG1WcOY&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hc3b5311622" class="cta-button pdf">
-                    <i class="fa-solid fa-file-pdf"></i> 
-                    <span lang="en">Open Here</span><span lang="hi">यहाँ खोलें</span>
-                </a>
+                <a href="https://www.canva.com/design/DAG2yG1WcOY/K10f8mssy7NW04YYj0qGIQ/view?utm_content=DAG2yG1WcOY&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hc3b5311622"
+                    class="cta-button pdf"><i class="fa-solid fa-file-pdf"></i> <span lang="en">Open Here</span><span
+                        lang="hi">यहाँ खोलें</span></a>
             </article>
-
-
         </main>
     </div>
-    
-    <div class="container">
-        <div class="community-card">
-            <i class="fa-brands fa-whatsapp"></i>
-            <h3><span lang="en">Join the Astroji Inner Circle</span><span lang="hi">एस्ट्रोजी इनर सर्कल से जुड़ें</span></h3>
-            <p><span lang="en">Get exclusive spiritual tips, early access to new products, and festival guidance from our experts.</span><span lang="hi">हमारे विशेषज्ञों से विशेष आध्यात्मिक टिप्स, नए उत्पादों तक शीघ्र पहुंच और त्योहारों पर मार्गदर्शन प्राप्त करें।</span></p>
-            <a href="https://chat.whatsapp.com/KTu3RlGXcx53WnjDunoRoF?mode=wwt" target="_blank" class="cta-button">
-                <span lang="en">Join for Free</span><span lang="hi">मुफ़्त में जुड़ें</span>
-            </a>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="page-footer">
-        <div class="container">
-            <div class="footer-container">
-
-                <!-- Column 1: About Astroji -->
-                <div class="footer-column about">
-                    <img src="https://astroji.thefuture.university/assets/assets/images/logo.f4052b287762d9b75dd6b6d53e471448.png" alt="Astroji Logo" class="footer-logo">
-                    <p>
-                        <span lang="en">Guiding your spiritual journey with authentic products for cosmic well-being and prosperity.</span>
-                        <span lang="hi">ब्रह्मांडीय कल्याण और समृद्धि के लिए प्रामाणिक उत्पादों के साथ आपकी आध्यात्मिक यात्रा का मार्गदर्शन।</span>
-                    </p>
-                </div>
-
-                <!-- Column 2: Quick Links & Support -->
-                <div class="footer-column links">
-                    <h3>
-                        <span lang="en">Support & Info</span>
-                        <span lang="hi">सहायता और जानकारी</span>
-                    </h3>
-                    <ul>
-                        <!-- 1. This is now the first item and has a class for styling -->
-                        <li class="cta-item">
-                            <a href="https://astroji.thefuture.university/astroji-mall" target="_blank">
-                                <i class="fa-solid fa-compass"></i>
-                                <span lang="en">Explore All Products</span>
-                                <span lang="hi">सभी उत्पाद देखें</span>
-                            </a>
-                        </li>
-                        <!-- The contact info is now secondary, as it should be -->
-                        <li><a href="tel:7973938627">
-                            <i class="fa-solid fa-phone"></i> 7973938627
-                        </a></li>
-                        <li><a href="mailto:support@thefuture.university">
-                            <i class="fa-solid fa-envelope"></i> support@thefuture.university
-                        </a></li>
-                    </ul>
-                </div>
-
-                <!-- Column 3: Stay Connected -->
-                <div class="footer-column connect">
-                    <h3>
-                        <span lang="en">Stay Connected</span>
-                        <span lang="hi">जुड़े रहें</span>
-                    </h3>
-                    <div class="social-links">
-                        <a href="https://www.youtube.com/@astrolearn_app" target="_blank" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
-                        <a href="https://www.instagram.com/astrojiofficial" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="https://chat.whatsapp.com/KTu3RlGXcx53WnjDunoRoF?mode=wwt" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Footer Bottom Bar -->
-            <div class="footer-bottom">
-                <p>&copy; 2024 Astroji. All Rights Reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // --- Element Selectors ---
-            const langToggleButton = document.getElementById('lang-toggle-btn');
-            const searchInput = document.getElementById('search-input');
-            const productCards = document.querySelectorAll('.product-card');
-            const noResultsMessage = document.getElementById('no-results');
-            const body = document.body;
-            const shareButton = document.getElementById('share-btn');
-
-            // --- 1. Language Toggling Functionality ---
-            const setLanguage = (lang) => {
-                if (lang === 'hi') {
-                    body.classList.add('lang-hi');
-                    localStorage.setItem('astroji-lang', 'hi');
-                } else {
-                    body.classList.remove('lang-hi');
-                    localStorage.setItem('astroji-lang', 'en');
-                }
-            };
-
-            langToggleButton.addEventListener('click', () => {
-                const isHindi = body.classList.contains('lang-hi');
-                setLanguage(isHindi ? 'en' : 'hi');
-            });
-
-            const savedLang = localStorage.getItem('astroji-lang') || 'en';
-            setLanguage(savedLang);
-
-            // --- 2. Live Search Functionality ---
-            searchInput.addEventListener('input', (e) => {
-                const searchTerm = e.target.value.toLowerCase().trim();
-                let visibleCards = 0;
-                productCards.forEach(card => {
-                    const searchableText = (card.dataset.tags || '').toLowerCase() +
-                                           card.querySelector('h2').textContent.toLowerCase() +
-                                           card.querySelector('p').textContent.toLowerCase();
-                    if (searchableText.includes(searchTerm)) {
-                        card.style.display = 'flex';
-                        visibleCards++;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-                noResultsMessage.style.display = visibleCards === 0 ? 'block' : 'none';
-            });
-            
-            // --- 3. Share Button Functionality --- (*** NEW CODE BLOCK ***)
-            if (shareButton) {
-                shareButton.addEventListener('click', async () => {
-                    const shareData = {
-                        title: document.title,
-                        text: 'Check out the Astroji Product Usage Guide!',
-                        url: window.location.href
-                    };
-
-                    try {
-                        // Use Web Share API if available (mobile)
-                        if (navigator.share) {
-                            await navigator.share(shareData);
-                            console.log('Guide shared successfully');
-                        } else {
-                            // Fallback for desktop: copy to clipboard
-                            await navigator.clipboard.writeText(shareData.url);
-                            
-                            // Visual feedback for user
-                            const originalIcon = shareButton.innerHTML;
-                            const originalTitle = shareButton.title;
-                            shareButton.innerHTML = '<i class="fa-solid fa-check"></i>';
-                            shareButton.title = 'Link Copied!';
-                            
-                            setTimeout(() => {
-                                shareButton.innerHTML = originalIcon;
-                                shareButton.title = originalTitle;
-                            }, 2000); // Revert after 2 seconds
-                        }
-                    } catch (err) {
-                        console.error('Share failed:', err);
-                        // Optional: alert the user if copy fails too
-                        // alert('Could not share or copy the link.'); 
-                    }
-                });
-            }
-
-            // --- 4. Scroll Animation ---
-            const animatedElements = document.querySelectorAll('.fade-in');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.1 });
-            animatedElements.forEach(el => observer.observe(el));
-
-
-            // --- 5. Combined FAB & Scroll-to-Top Logic (Improved Functionality) ---
-            const fabContainer = document.getElementById('fab-container');
-            const fabMainButton = document.getElementById('fab-main-button');
-            let attentionInterval; // To hold our interval timer
-            let attentionTimeout;  // To hold the timeout that reverts the animation
-
-            if (fabContainer && fabMainButton) {
-                // --- Initial Appearance ---
-                setTimeout(() => {
-                    fabContainer.classList.add('visible');
-                }, 500);
-
-                // --- Scroll Detection ---
-                window.addEventListener('scroll', () => {
-                    if (window.scrollY > 300) {
-                        fabContainer.classList.add('is-scrolled');
-                        startAttentionSeeker();
-                    } else {
-                        fabContainer.classList.remove('is-scrolled');
-                        stopAttentionSeeker();
-                    }
-                });
-
-                // --- Click Handler (New Logic) ---
-                fabMainButton.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    
-                    // CASE 1: Menu is already open. Action: Close it.
-                    if (fabContainer.classList.contains('active')) {
-                        fabContainer.classList.remove('active');
-                        return;
-                    }
-                    
-                    // CASE 2: Button is in 'attention-seek' mode (+ sign is showing). Action: Open the menu.
-                    if (fabContainer.classList.contains('attention-seek')) {
-                        stopAttentionSeeker(); // Stop any pending animations
-                        fabContainer.classList.add('active');
-                        return;
-                    }
-
-                    // CASE 3: Default behavior.
-                    if (fabContainer.classList.contains('is-scrolled')) {
-                        // Scrolled down -> Scroll to top
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    } else {
-                        // At the top -> Open the menu
-                        fabContainer.classList.add('active');
-                    }
-                });
-
-                // --- Attention-Grabbing Animation Logic (New Logic) ---
-                function startAttentionSeeker() {
-                    if (attentionInterval) return;
-
-                    attentionInterval = setInterval(() => {
-                        if (!fabContainer.classList.contains('active')) {
-                            // 1. Flip to Plus icon
-                            fabContainer.classList.add('attention-seek');
-
-                            // 2. Wiggle after a short delay
-                            setTimeout(() => {
-                                fabContainer.classList.add('is-wiggling');
-                            }, 300);
-
-                            // 3. Set a timeout to revert the animation back to the arrow
-                            //    We store this timeout so we can cancel it if the user clicks the button.
-                            const animationDuration = 4000; // INCREASED: Now stays as '+' for 4 seconds
-                            attentionTimeout = setTimeout(() => {
-                                fabContainer.classList.remove('attention-seek');
-                                fabContainer.classList.remove('is-wiggling');
-                            }, animationDuration); 
-                        }
-                    }, 9000); // Repeats every 9 seconds (5s pause + 4s animation)
-                }
-
-                function stopAttentionSeeker() {
-                    // Clear both the interval and any pending animation timeout
-                    clearInterval(attentionInterval);
-                    clearTimeout(attentionTimeout);
-                    attentionInterval = null;
-                    // Immediately remove animation classes to prevent them from getting stuck
-                    fabContainer.classList.remove('attention-seek');
-                    fabContainer.classList.remove('is-wiggling');
-                }
-                
-                // Close menu if user clicks elsewhere
-                document.addEventListener('click', (event) => {
-                    if (!fabContainer.contains(event.target) && fabContainer.classList.contains('active')) {
-                        fabContainer.classList.remove('active');
-                    }
-                });
-            }
-        });
-    </script>
-
-<!-- Combined Floating Action Button (FAB) & Scroll-to-Top -->
-<div class="fab-container" id="fab-container">
-    <!-- The expanding social media options remain the same -->
-    <div class="fab-options">
-        <a href="https://www.youtube.com/@astrolearn_app" target="_blank" class="fab-option fab-youtube" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
-        <a href="https://www.instagram.com/astrojiofficial" target="_blank" class="fab-option fab-instagram" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-        <a href="https://chat.whatsapp.com/KTu3RlGXcx53WnjDunoRoF?mode=wwt" target="_blank" class="fab-option fab-whatsapp" title="Join our Community"><i class="fa-brands fa-whatsapp"></i></a>
-    </div>
-
-    <!-- The main button now contains all three state icons -->
-    <div class="fab-main-button" id="fab-main-button">
-        <i class="fa-solid fa-plus icon-plus"></i>
-        <i class="fa-solid fa-arrow-up icon-arrow-up"></i>
-        <i class="fa-solid fa-xmark icon-close"></i>
+<div class="container">
+    <div class="community-card">
+        <i class="fa-brands fa-whatsapp"></i>
+        <h3><span lang="en">Join the Astroji Inner Circle</span><span lang="hi">एस्ट्रोजी इनर सर्कल से जुड़ें</span>
+        </h3>
+        <p><span lang="en">Get exclusive spiritual tips, early access to new products, and festival guidance from our
+                experts.</span><span lang="hi">हमारे विशेषज्ञों से विशेष आध्यात्मिक टिप्स, नए उत्पादों तक शीघ्र पहुंच और
+                त्योहारों पर मार्गदर्शन प्राप्त करें।</span></p>
+        <a href="https://chat.whatsapp.com/KTu3RlGXcx53WnjDunoRoF?mode=wwt" target="_blank" class="cta-button">
+            <span lang="en">Join for Free</span><span lang="hi">मुफ़्त में जुड़ें</span>
+        </a>
     </div>
 </div>
 
+<!-- Footer -->
+<footer class="page-footer">
+    <div class="container">
+        <div class="footer-container">
+            <!-- Column 1: About Astroji -->
+            <div class="footer-column about">
+                <img src="https://astroji.thefuture.university/assets/assets/images/logo.f4052b287762d9b75dd6b6d53e471448.png"
+                    alt="Astroji Logo" class="footer-logo">
+                <p>
+                    <span lang="en">Guiding your spiritual journey with authentic products for cosmic well-being and
+                        prosperity.</span>
+                    <span lang="hi">ब्रह्मांडीय कल्याण और समृद्धि के लिए प्रामाणिक उत्पादों के साथ आपकी आध्यात्मिक
+                        यात्रा का मार्गदर्शन।</span>
+                </p>
+            </div>
+
+            <!-- Column 2: Quick Links & Support -->
+            <div class="footer-column links">
+                <h3><span lang="en">Support & Info</span><span lang="hi">सहायता और जानकारी</span></h3>
+                <ul>
+                    <li class="cta-item">
+                        <a href="https://astroji.com" target="_blank">
+                            <i class="fa-solid fa-compass"></i>
+                            <span lang="en">Explore All Products</span><span lang="hi">सभी उत्पाद देखें</span>
+                        </a>
+                    </li>
+                    <li><a href="tel:7973938627"><i class="fa-solid fa-phone"></i> 7973938627</a></li>
+                    <li><a href="mailto:support@thefuture.university"><i class="fa-solid fa-envelope"></i>
+                            support@thefuture.university</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 3: Stay Connected -->
+            <div class="footer-column connect">
+                <h3><span lang="en">Stay Connected</span><span lang="hi">जुड़े रहें</span></h3>
+                <div class="social-links">
+                    <a href="https://www.youtube.com/@astrolearn_app" target="_blank" title="YouTube"><i
+                            class="fa-brands fa-youtube"></i></a>
+                    <a href="https://www.instagram.com/astrojiofficial" target="_blank" title="Instagram"><i
+                            class="fa-brands fa-instagram"></i></a>
+                    <a href="https://chat.whatsapp.com/KTu3RlGXcx53WnjDunoRoF?mode=wwt" target="_blank"
+                        title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Bottom Bar -->
+        <div class="footer-bottom">
+            <a href="https://www.youtube.com/@astrolearn_app" target="_blank" class="fab-option fab-youtube"
+                title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+            <a href="https://www.instagram.com/astrojiofficial" target="_blank" class="fab-option fab-instagram"
+                title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://chat.whatsapp.com/KTu3RlGXcx53WnjDunoRoF?mode=wwt" target="_blank"
+                class="fab-option fab-whatsapp" title="Join our Community"><i class="fa-brands fa-whatsapp"></i></a>
+        </div>
+
+        <!-- FAB -->
+        <div class="fab-main-button" id="fab-main-button">
+            <i class="fa-solid fa-plus icon-plus"></i>
+            <i class="fa-solid fa-arrow-up icon-arrow-up"></i>
+            <i class="fa-solid fa-xmark icon-close"></i>
+        </div>
+    </div>
+</footer>
+
+<script>
+    /* --- 1. Language Toggling --- */
+    const langToggleBtn = document.getElementById('lang-toggle-btn');
+    const body = document.body;
+    const savedLang = localStorage.getItem('astroji-lang') || 'en';
+    if (savedLang === 'hi') { body.classList.add('lang-hi'); }
+    langToggleBtn.addEventListener('click', () => {
+        body.classList.toggle('lang-hi');
+        const newLang = body.classList.contains('lang-hi') ? 'hi' : 'en';
+        localStorage.setItem('astroji-lang', newLang);
+    });
+
+    /* --- 2. Search Functionality --- */
+    const searchInput = document.getElementById('search-input');
+    const productCards = document.querySelectorAll('.product-card');
+    const noResultsMsg = document.getElementById('no-results');
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        let hasResults = false;
+        productCards.forEach(card => {
+            const tags = card.getAttribute('data-tags').toLowerCase();
+            const titleEn = card.querySelector('h2 [lang="en"]').textContent.toLowerCase();
+            const titleHi = card.querySelector('h2 [lang="hi"]').textContent.toLowerCase();
+            if (tags.includes(query) || titleEn.includes(query) || titleHi.includes(query)) {
+                card.style.display = 'flex';
+                card.style.animation = 'none';
+                card.offsetHeight; /* trigger reflow */
+                card.style.animation = 'fadeInUp 0.5s ease forwards';
+                hasResults = true;
+            } else { card.style.display = 'none'; }
+        });
+        noResultsMsg.style.display = hasResults ? 'none' : 'block';
+    });
+
+    /* --- 3. 3D Tilt Effect for Cards --- */
+    productCards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const xPct = x / rect.width;
+            const yPct = y / rect.height;
+            const xRot = (0.5 - yPct) * 20;
+            const yRot = (xPct - 0.5) * 20;
+            card.style.transform = `perspective(1000px) rotateX(${xRot}deg) rotateY(${yRot}deg) scale(1.02)`;
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+        });
+    });
+
+    /* --- 4. FAB & Scroll-to-Top Logic --- */
+    const fabContainer = document.querySelector('.fab-container');
+    const fabMainBtn = document.getElementById('fab-main-button');
+    let isMenuOpen = false;
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            fabContainer.classList.add('visible');
+            fabContainer.classList.add('is-scrolled');
+        } else {
+            fabContainer.classList.remove('visible');
+            fabContainer.classList.remove('is-scrolled');
+            if (isMenuOpen) toggleMenu();
+        }
+    });
+    fabMainBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (fabContainer.classList.contains('is-scrolled') && !isMenuOpen) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else { toggleMenu(); }
+    });
+    function toggleMenu() {
+        isMenuOpen = !isMenuOpen;
+        fabContainer.classList.toggle('active', isMenuOpen);
+        if (isMenuOpen) { fabContainer.classList.remove('is-scrolled'); }
+        else if (window.scrollY > 300) { fabContainer.classList.add('is-scrolled'); }
+    }
+    document.addEventListener('click', (e) => {
+        if (isMenuOpen && !fabContainer.contains(e.target)) { toggleMenu(); }
+    });
+    setInterval(() => {
+        if (!isMenuOpen && window.scrollY > 300) {
+            fabContainer.classList.add('is-wiggling');
+            setTimeout(() => fabContainer.classList.remove('is-wiggling'), 1000);
+        }
+    }, 10000);
+
+    /* --- 5. Share Button Logic --- */
+    document.getElementById('share-btn').addEventListener('click', async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Astroji Product Usage Guide',
+                    text: 'Check out this guide for Astroji spiritual products!',
+                    url: window.location.href
+                });
+            } catch (err) { console.log('Error sharing:', err); }
+        } else { alert('Sharing is not supported on this browser. Copy the URL to share!'); }
+    });
+
+    /* --- 6. Intersection Observer for Fade-in Animation --- */
+    const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    document.querySelectorAll('.fade-in').forEach(el => { observer.observe(el); });
+</script>
 </body>
+
 </html>
